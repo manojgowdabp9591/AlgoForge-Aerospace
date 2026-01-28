@@ -4,10 +4,11 @@ import { useState } from "react";
 
 export default function Apply({ role }: { role: string }) {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   if (submitted) {
     return (
-      <p className="mt-10 text-cyan-400 text-lg">
+      <p className="mt-10 text-cyan-400 text-lg font-semibold">
         ✔ Application submitted. Our team will contact you.
       </p>
     );
@@ -15,55 +16,55 @@ export default function Apply({ role }: { role: string }) {
 
   return (
     <div className="mt-16">
-      <h2 className="text-3xl font-bold mb-6">
-        Apply for this role
-      </h2>
+      <h2 className="text-3xl font-bold mb-6">Apply for this role</h2>
 
       <form
-        onSubmit={(e) => {
+        className="grid gap-4 max-w-xl"
+        onSubmit={async (e) => {
           e.preventDefault();
+          setLoading(true);
+
+          const formData = new FormData(e.currentTarget);
+          formData.append("role", role);
+
+          await fetch("/api/apply", {
+            method: "POST",
+            body: formData,
+          });
+
+          setLoading(false);
           setSubmitted(true);
         }}
-        className="grid gap-4 max-w-xl"
       >
         <input
+          name="name"
           required
           placeholder="Full Name"
           className="bg-black/60 border border-white/10 rounded px-4 py-3 text-white"
         />
 
         <input
-          required
+          name="email"
           type="email"
+          required
           placeholder="Email"
           className="bg-black/60 border border-white/10 rounded px-4 py-3 text-white"
         />
 
-        <input
-          placeholder="LinkedIn / Portfolio URL"
-          className="bg-black/60 border border-white/10 rounded px-4 py-3 text-white"
-        />
-
-        <input
-          placeholder="Resume Upload"
-          required
-          type="file"
-          accept="application/pdf"
-          className="bg-black/60 border border-white/10 rounded px-4 py-3 text-white"
-        />
-
         <textarea
-          required
+          name="message"
           rows={5}
+          required
           placeholder={`Why do you want to join Space Gen as a ${role}?`}
           className="bg-black/60 border border-white/10 rounded px-4 py-3 text-white resize-none"
         />
 
         <button
           type="submit"
-          className="mt-4 px-8 py-3 bg-cyan-400 text-black font-bold rounded-full hover:bg-cyan-300"
+          disabled={loading}
+          className="mt-4 px-8 py-3 bg-cyan-400 text-black font-bold rounded-full hover:bg-cyan-300 disabled:opacity-50"
         >
-          Submit Application
+          {loading ? "Submitting..." : "Submit Application"}
         </button>
       </form>
     </div>

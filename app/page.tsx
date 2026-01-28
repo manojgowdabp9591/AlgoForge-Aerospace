@@ -24,20 +24,6 @@ export default function Home() {
       {/* LAUNCH NETWORK */}
       <LaunchNetwork />
 
-      {/* 3D ROCKET SECTION */}
-      {/* CHANGED: Transparent bg */}
-      <section className="py-32 bg-transparent">
-        <h2 className="text-4xl font-bold text-center mb-10">Our Launch Vehicle</h2>
-        <Rocket3D />
-      </section>
-
-      {/* EARTH ORBIT SECTION */}
-      {/* CHANGED: Transparent bg */}
-      <section className="py-32 bg-transparent">
-        <h2 className="text-4xl font-bold text-center mb-10">Global Satellite Network</h2>
-        <EarthOrbit />
-      </section>
-
       {/* MISSION */}
       <section id="mission" className="py-32 px-6 max-w-6xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
