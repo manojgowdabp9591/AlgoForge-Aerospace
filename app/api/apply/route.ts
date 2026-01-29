@@ -1,16 +1,15 @@
-// app/api/apply/route.ts
-
-import { applications } from "@/app/lib/store";
+import { connectDB } from "@/app/lib/mongodb";
+import Application from "@/app/models/Application";
 
 export async function POST(req: Request) {
-  const data = await req.formData();
+  const body = await req.json();
+  await connectDB();
 
-  applications.push({
-    name: String(data.get("name")),
-    email: String(data.get("email")),
-    role: String(data.get("role")),
-    message: String(data.get("message")),
-    time: new Date().toLocaleString(),
+  await Application.create({
+    name: body.name,
+    email: body.email,
+    role: body.role,
+    message: body.message,
   });
 
   return Response.json({ success: true });
