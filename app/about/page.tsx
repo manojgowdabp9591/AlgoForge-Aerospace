@@ -26,9 +26,9 @@ export default function AboutPage() {
             <div className="absolute inset-0 bg-cyan-500/20 blur-[60px] rounded-full pointer-events-none" />
             <div className="relative w-80 h-80 rounded-2xl overflow-hidden border border-white/20 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
               <img
-                src="/founder.jpg"
+                src="/founder.jpeg"
                 alt="Manoj Gowda B P - Founder"
-                className="w-full h-full object-cover bg-neutral-900"
+                className="w-fit h-fit object-cover bg-neutral-900"
               />
             </div>
           </motion.div>
@@ -145,7 +145,7 @@ export default function AboutPage() {
               <img
                 src="/cofounder.jpeg"
                 alt="Co-Founder"
-                className="w-full h-full object-cover bg-neutral-900"
+                className="w-fit h-fit object-cover bg-neutral-900"
               />
             </div>
           </motion.div>
