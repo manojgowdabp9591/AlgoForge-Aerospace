@@ -33,7 +33,8 @@ export default function LaunchNetwork() {
         </div>
 
         {/* --- RIGHT SIDE: GLOBE (Full Bleed to Right Edge) --- */}
-        <div className="relative w-full h-[600px] lg:h-[900px] bg-radial-gradient(circle at center, rgba(34,211,238,0.05) 0%, transparent 60%) border-l border-white/5">
+        {/* MOBILE UPDATE: Changed h-[600px] to h-[450px] for better mobile fit */}
+        <div className="relative w-full h-[450px] lg:h-[900px] bg-radial-gradient(circle at center, rgba(34,211,238,0.05) 0%, transparent 60%) border-l border-white/5">
           {/* We remove rounded corners here to let it touch the edge */}
           <InteractiveGlobe />
         </div>
@@ -128,7 +129,9 @@ function InteractiveGlobe() {
                 const controls = globeEl.current.controls();
                 controls.autoRotate = true;
                 controls.autoRotateSpeed = 0.5;
-                globeEl.current.pointOfView({ lat: 20, lng: 0, altitude: 2.0 });
+                // Auto-adjust camera for mobile vs desktop
+                const altitude = window.innerWidth < 768 ? 3.5 : 2.0;
+                globeEl.current.pointOfView({ lat: 20, lng: 0, altitude });
             }
         }}
 
