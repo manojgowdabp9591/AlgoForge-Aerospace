@@ -2,157 +2,211 @@
 
 import PageLayout from "../components/PageLayout";
 import { motion } from "framer-motion";
+import { Rocket, Cpu, Globe, Target, User, Zap, Flag } from "lucide-react";
 
 export default function AboutPage() {
   return (
     <PageLayout 
-      title="Our Mission" 
+      title="Mission Log: Origin" 
       subtitle="Democratizing access to space for the next generation."
     >
-      <div className="space-y-32 mt-10"> {/* Added space-y-32 for vertical separation */}
+      <div className="space-y-32 mt-10">
 
         {/* =========================================
-            SECTION 1: THE FOUNDER (Image Left)
+            SECTION 1: THE FOUNDER (Personnel File 001)
            ========================================= */}
         <div className="grid md:grid-cols-2 gap-16 items-center">
           
-          {/* FOUNDER IMAGE */}
+          {/* IMAGE / DOSSIER PHOTO */}
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 1 }}
-            className="relative flex justify-center"
+            className="relative flex justify-center group"
           >
-            <div className="absolute inset-0 bg-cyan-500/20 blur-[60px] rounded-full pointer-events-none" />
-            <div className="relative w-80 h-80 rounded-2xl overflow-hidden border border-white/20 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
+            {/* Holographic Glow */}
+            <div className="absolute inset-0 bg-cyan-500/20 blur-[80px] rounded-full pointer-events-none group-hover:bg-cyan-500/30 transition duration-1000" />
+            
+            {/* Image Frame */}
+            <div className="relative w-80 h-96 rounded-2xl overflow-hidden border border-white/20 shadow-[0_0_20px_rgba(34,211,238,0.2)] bg-black">
+              <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+              
+              {/* HUD Overlay */}
+              <div className="absolute bottom-4 left-4 z-20">
+                 <p className="text-xl font-bold text-white tracking-widest uppercase">Manoj Gowda</p>
+                 <p className="text-xs text-cyan-400 font-mono">CMD // ID: SG-001</p>
+              </div>
+
               <img
                 src="/founder.jpeg"
                 alt="Manoj Gowda B P - Founder"
-                className="w-fit h-fit object-cover bg-neutral-900"
+                className="w-full h-fit object-cover opacity-90 group-hover:scale-105 transition duration-700"
               />
             </div>
           </motion.div>
 
-          {/* FOUNDER TEXT */}
+          {/* TEXT CONTENT */}
           <motion.div
              initial={{ opacity: 0, x: 50 }}
              whileInView={{ opacity: 1, x: 0 }}
              transition={{ duration: 1 }}
           >
-            <h2 className="text-4xl font-extrabold mb-8 text-white">
-              Why We Look Up.
-            </h2>
+            <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400 border border-cyan-500/20">
+                    <Flag size={24} />
+                </div>
+                <h2 className="text-4xl font-extrabold text-white">Why We Look Up.</h2>
+            </div>
 
             <div className="space-y-6 text-lg text-white/70 leading-relaxed font-light">
               <p>
-                For decades, space has been the province of superpowers and massive
-                budgets. But I founded <span className="text-cyan-400 font-bold">Space Gen</span> with a different belief: 
-                that space belongs to everyone.
+                For decades, space has been the province of superpowers. But I founded 
+                <span className="text-cyan-400 font-bold"> Space Gen</span> with a 
+                single directive: <span className="text-white">space belongs to everyone.</span>
               </p>
               <p>
-                Growing up, I watched rockets climb into the sky and realized that
-                the only thing holding us back was the immense cost of throwing away
-                the vehicle after every trip. In no other mode of transportation—
-                cars, planes, trains—do we discard the vehicle after a single
-                journey. Why should space be different?
+                In no other mode of transportation—cars, planes, trains—do we discard the 
+                vehicle after a single journey. Why should space be different? We are solving 
+                the hardest engineering problems to make a ticket to orbit as common as a plane ticket.
               </p>
-              <p>
-                At Space Gen, we are solving the hardest engineering problems to
-                build a future where a ticket to orbit is as common as a plane
-                ticket. We are leveraging India’s incredible engineering talent and
-                frugal innovation to build the world’s most efficient reusable
-                rockets.
-              </p>
-              <p className="italic border-l-2 border-cyan-400 pl-4 my-6 text-white/90">
-                "We aren’t just building machines; we are building a highway to the
-                stars for the next generation. The road is hard, but the view is
-                worth it."
-              </p>
-            </div>
-
-            <div className="mt-10">
-              <p className="text-2xl font-handwriting text-cyan-400 font-bold glow-text">
-                Manoj Gowda B P
-              </p>
-              <p className="text-sm text-white/40 uppercase tracking-widest mt-1">
-                Founder & Chairman
-              </p>
+              
+              <div className="bg-white/5 border-l-4 border-cyan-400 p-6 my-8 rounded-r-xl backdrop-blur-sm">
+                 <p className="italic text-white/90 font-medium">
+                  "We aren’t just building machines; we are building a highway to the 
+                  stars. The road is hard, but the view is worth it."
+                 </p>
+              </div>
+              
+              <div className="flex gap-10 mt-8 border-t border-white/10 pt-6">
+                 <Stat label="Role" value="Founder & CEO" />
+                 <Stat label="Clearance" value="Level 5" />
+                 <Stat label="Focus" value="Strategy" />
+              </div>
             </div>
           </motion.div>
         </div>
 
         {/* =========================================
-            SECTION 2: THE CO-FOUNDER (Image Right)
+            SECTION 2: THE CO-FOUNDER (Personnel File 002)
            ========================================= */}
         <div className="grid md:grid-cols-2 gap-16 items-center">
           
-          {/* CO-FOUNDER TEXT (Order 2 on Mobile, Order 1 on Desktop) */}
+          {/* TEXT CONTENT */}
           <motion.div
              initial={{ opacity: 0, x: -50 }}
              whileInView={{ opacity: 1, x: 0 }}
              transition={{ duration: 1 }}
              className="order-2 md:order-1"
           >
-            <h2 className="text-4xl font-extrabold mb-8 text-white">
-              How We Get There.
-            </h2>
+            <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400 border border-purple-500/20">
+                    <Cpu size={24} />
+                </div>
+                <h2 className="text-4xl font-extrabold text-white">How We Get There.</h2>
+            </div>
 
             <div className="space-y-6 text-lg text-white/70 leading-relaxed font-light">
               <p>
-                Vision is the spark, but engineering is the fuel. As Co-Founder, my
-                focus is turning the impossible physics of reusability into a
-                repeatable, reliable reality.
+                Vision is the spark, but engineering is the fuel. My focus is turning the 
+                impossible physics of reusability into a repeatable, reliable reality.
               </p>
               <p>
-                We are building engines that don't just survive the fiery reentry 
-                but thrive in it. By combining advanced avionics with lightweight 
-                alloy structures, we are shaving off the kilograms that matter most.
+                We are building engines that thrive in the inferno of reentry. By combining 
+                advanced avionics with lightweight alloy structures, we are shaving off the 
+                kilograms that matter most. The next Silicon Valley isn't on the ground—it's 
+                in Low Earth Orbit.
               </p>
-              <p>
-                We believe that the next Silicon Valley isn't on the ground—it's in 
-                Low Earth Orbit. My job is to ensure that Space Gen provides the 
-                logistics backbone to get there safely, efficiently, and affordably.
-              </p>
-              <p className="italic border-l-2 border-purple-500 pl-4 my-6 text-white/90">
-                "Gravity is a formidable opponent, but it is not unbeatable. With 
-                the right math and the right team, we can make spaceflight boringly 
-                routine."
-              </p>
-            </div>
 
-            <div className="mt-10">
-              <p className="text-2xl font-handwriting text-purple-400 font-bold glow-text">
-                Sandeep S M
-              </p>
-              <p className="text-sm text-white/40 uppercase tracking-widest mt-1">
-                Co-Founder & CEO
-              </p>
+              <div className="bg-white/5 border-l-4 border-purple-500 p-6 my-8 rounded-r-xl backdrop-blur-sm">
+                 <p className="italic text-white/90 font-medium">
+                  "Gravity is a formidable opponent, but it is not unbeatable. With the 
+                  right math and the right team, we make spaceflight routine."
+                 </p>
+              </div>
+
+              <div className="flex gap-10 mt-8 border-t border-white/10 pt-6">
+                 <Stat label="Role" value="Co-Founder & CTO" />
+                 <Stat label="System" value="Propulsion" />
+                 <Stat label="Status" value="Active" />
+              </div>
             </div>
           </motion.div>
 
-          {/* CO-FOUNDER IMAGE (Order 1 on Mobile, Order 2 on Desktop) */}
+          {/* IMAGE / DOSSIER PHOTO */}
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 1 }}
-            className="relative flex justify-center order-1 md:order-2"
+            className="relative flex justify-center order-1 md:order-2 group"
           >
-            {/* Purple Glow for distinction */}
-            <div className="absolute inset-0 bg-purple-500/20 blur-[60px] rounded-full pointer-events-none" />
+            {/* Holographic Glow */}
+            <div className="absolute inset-0 bg-purple-500/20 blur-[80px] rounded-full pointer-events-none group-hover:bg-purple-500/30 transition duration-1000" />
             
-            <div className="relative w-80 h-80 rounded-2xl overflow-hidden border border-white/20 shadow-[0_0_40px_rgba(168,85,247,0.2)]">
-              {/* Ensure you have 'cofounder.jpg' in public folder */}
+            {/* Image Frame */}
+            <div className="relative w-80 h-96 rounded-2xl overflow-hidden border border-white/20 shadow-[0_0_20px_rgba(168,85,247,0.2)] bg-black">
+              <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+              
+              {/* HUD Overlay */}
+              <div className="absolute bottom-4 left-4 z-20">
+                 <p className="text-xl font-bold text-white tracking-widest uppercase">Sandeep S M</p>
+                 <p className="text-xs text-purple-400 font-mono">CTO // ID: SG-002</p>
+              </div>
+
               <img
                 src="/cofounder.jpeg"
-                alt="Co-Founder"
-                className="w-fit h-fit object-cover bg-neutral-900"
+                alt="Sandeep S M - Co-Founder"
+                className="w-fit h-fit object-cover opacity-90 group-hover:scale-105 transition duration-700"
               />
             </div>
           </motion.div>
 
         </div>
 
+        {/* =========================================
+            SECTION 3: CORE DIRECTIVES (Values)
+           ========================================= */}
+        <div className="grid md:grid-cols-3 gap-6 pt-20 border-t border-white/10">
+            <ValueCard 
+                title="Radical Reusability" 
+                icon={Rocket}
+                desc="We don't build throwaway machines. Every stage, every engine, every fairing returns home." 
+            />
+            <ValueCard 
+                title="Frugal Innovation" 
+                icon={Zap}
+                desc="We leverage smart engineering to reduce costs by orders of magnitude, not just percentages." 
+            />
+            <ValueCard 
+                title="Global Access" 
+                icon={Globe}
+                desc="Space is for all of humanity. We are building the infrastructure to open the frontier to everyone." 
+            />
+        </div>
+
       </div>
     </PageLayout>
   );
+}
+
+// --- SUB-COMPONENTS ---
+
+function Stat({ label, value }: { label: string, value: string }) {
+    return (
+        <div>
+            <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold mb-1">{label}</p>
+            <p className="text-sm font-mono text-white font-bold">{value}</p>
+        </div>
+    )
+}
+
+function ValueCard({ title, desc, icon: Icon }: any) {
+    return (
+        <div className="p-8 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition duration-300">
+            <div className="mb-4 text-cyan-400">
+                <Icon size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
+            <p className="text-white/60 leading-relaxed text-sm">{desc}</p>
+        </div>
+    )
 }

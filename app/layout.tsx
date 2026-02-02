@@ -5,6 +5,7 @@ import Galaxy from "./components/Galaxy";
 import ParallaxGalaxy from "./components/ParallaxGalaxy";
 import Navbar from "./components/Navbar";
 import Preloader from "./components/Preloader";
+import Footer from "./components/Footer"; // Footer is global
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,11 +55,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
+        {/* 1. Global Backgrounds */}
         <Galaxy />
         <ParallaxGalaxy />
         <Preloader />
-        {children}
+
+        {/* 2. Navigation (Fixed Top) */}
         <Navbar />
+
+        {/* 3. Main Page Content */}
+        {children}
+
+        {/* 4. Global Footer (Always at bottom) */}
+        <Footer />
       </body>
     </html>
   );
