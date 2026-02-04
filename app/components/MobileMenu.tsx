@@ -61,7 +61,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             {/* Links Stack */}
             <nav className="flex flex-col gap-6 text-lg font-medium text-white/80">
               <MobileLink href="/#mission" onClick={onClose}>Mission</MobileLink>
-              <MobileLink href="/#tech" onClick={onClose}>Technology</MobileLink>
+              <MobileLink href="/technology/engine" onClick={onClose}>Technology</MobileLink>
               <MobileLink href="/investors" onClick={onClose}>Investors</MobileLink>
               <MobileLink href="/careers" onClick={onClose}>Careers</MobileLink>
               <MobileLink href="/about" onClick={onClose}>About</MobileLink>
