@@ -2,14 +2,12 @@
 
 import PageLayout from "@/app/components/PageLayout";
 import { motion } from "framer-motion";
-import { label } from "framer-motion/client";
 import { Rocket, Box, Wind, Zap } from "lucide-react";
 import { useState } from "react";
 
 export default function OrbitonPage() {
   const [activeStage, setActiveStage] = useState<"fairing" | "stage2" | "stage1">("stage1");
 
-  // Helper for blueprint stroke styles
   const strokeColor = (isActive: boolean) => isActive ? "#22d3ee" : "rgba(59,130,246,0.5)";
   const strokeWidth = (isActive: boolean) => isActive ? 3 : 1.5;
   const filter = (isActive: boolean) => isActive ? "drop-shadow(0 0 8px rgba(34,211,238,0.6))" : "none";
@@ -22,29 +20,25 @@ export default function OrbitonPage() {
     >
       <div className="grid lg:grid-cols-12 gap-10 mt-10 items-start">
         
-        {/* LEFT COLUMN: PURE CODE BLUEPRINT */}
+        {/* LEFT COLUMN: BLUEPRINT */}
         <div className="lg:col-span-5 relative h-[700px] bg-blue-950/20 border border-blue-500/30 rounded-3xl overflow-hidden backdrop-blur-sm flex items-center justify-center group select-none">
             
-            {/* CSS Grid Background */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.1)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
             
-            {/* Scale Markers */}
-            <div className="absolute top-10 left-4 bottom-10 border-l border-blue-500/30 border-dashed flex flex-col justify-between text-[10px] text-blue-400 font-mono py-2">
-                <span>24m</span>
-                <span>12m</span>
-                <span>0m</span>
+            <div className="absolute top-4 left-4 bottom-10 border-l border-blue-500/30 border-dashed flex flex-col justify-between text-[10px] text-blue-400 font-mono py-2 h-[90%]">
+                <div className="relative"><span className="absolute -top-2 -left-1">—</span><span className="pl-2">24m</span></div>
+                <div>12m</div>
+                <div>0m</div>
             </div>
 
-            {/* ================= PURE SVG ROCKET ================= */}
             <svg viewBox="0 0 500 800" className="w-full h-full p-8 z-10">
                 <defs>
-                  {/* Pattern for internal tech details */}
                   <pattern id="grid-pattern" width="10" height="10" patternUnits="userSpaceOnUse">
                     <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(34,211,238,0.1)" strokeWidth="0.5"/>
                   </pattern>
                 </defs>
 
-                {/* --- GROUP 1: STAGE 1 (WINGS & BOOSTERS & ENGINES) --- */}
+                {/* --- GROUP 1: STAGE 1 (INCREASED SIZE) --- */}
                 <motion.g 
                   onClick={() => setActiveStage("stage1")}
                   className="cursor-pointer transition-all duration-300"
@@ -57,29 +51,35 @@ export default function OrbitonPage() {
                   }}
                   fill="transparent"
                 >
-                    {/* Left Wing */}
-                    <path d="M190 300 L140 450 L140 580 L190 580 Z" fill="url(#grid-pattern)" />
-                    <path d="M140 450 L50 600 L140 600 C140 600 160 620 190 640" /> 
-                    
-                    {/* Right Wing */}
-                    <path d="M310 300 L360 450 L360 580 L310 580 Z" fill="url(#grid-pattern)" />
-                    <path d="M360 450 L450 600 L360 600 C360 600 340 620 310 640" />
+                    {/* Main Body - WIDENED (Now 200 to 300) */}
+                    <path d="M200 260 L200 700 L300 700 L300 260" fill="url(#grid-pattern)" />
+                    <path d="M250 260 L250 700" strokeDasharray="10 5" opacity="0.5"/>
 
-                    {/* Left Booster */}
-                    <path d="M190 280 C190 260 200 240 210 240 L210 600 C200 600 190 590 190 580 Z" />
-                    <line x1="190" y1="320" x2="210" y2="320" />
+                    {/* Left Wing - MASSIVE INCREASE */}
+                    {/* Starts higher (450) and goes wider (110) */}
+                    <path d="M200 450 L110 600 L110 700 L200 700" fill="url(#grid-pattern)" />
+                    {/* Wing Tip Extension */}
+                    <path d="M110 600 L20 720 L110 720 C110 720 130 740 160 740" /> 
                     
-                    {/* Right Booster */}
-                    <path d="M310 280 C310 260 300 240 290 240 L290 600 C300 600 310 590 310 580 Z" />
-                    <line x1="310" y1="320" x2="290" y2="320" />
+                    {/* Right Wing - MASSIVE INCREASE */}
+                    {/* Starts higher (450) and goes wider (390) */}
+                    <path d="M300 450 L390 600 L390 700 L300 700" fill="url(#grid-pattern)" />
+                    {/* Wing Tip Extension */}
+                    <path d="M390 600 L480 720 L390 720 C390 720 370 740 340 740" />
 
-                    {/* Main Engines */}
-                    <path d="M220 660 L230 700 L270 700 L280 660" /> {/* Center */}
-                    <path d="M190 640 L195 680 L215 680 L220 640" /> {/* Left */}
-                    <path d="M280 640 L285 680 L305 680 L310 640" /> {/* Right */}
+                    {/* Legs adjusted for wider body */}
+                    <path d="M200 550 C200 550 180 650 180 720" />
+                    <path d="M300 550 C300 550 320 650 320 720" />
+
+                    {/* Engines - Spread out for wider body */}
+                    <path d="M230 700 L240 740 L260 740 L270 700" /> {/* Center */}
+                    <path d="M180 700 L185 730 L210 730 L215 700" /> {/* Left Edge */}
+                    <path d="M285 700 L290 730 L315 730 L320 700" /> {/* Right Edge */}
+                    
+                    <line x1="200" y1="260" x2="300" y2="260" strokeWidth="2" />
                 </motion.g>
 
-                {/* --- GROUP 2: STAGE 2 (CENTRAL CORE) --- */}
+                {/* --- GROUP 2: STAGE 2 (WIDENED TO MATCH) --- */}
                 <motion.g 
                   onClick={() => setActiveStage("stage2")}
                   className="cursor-pointer"
@@ -92,19 +92,13 @@ export default function OrbitonPage() {
                   }}
                   fill="transparent"
                 >
-                    {/* Main Fuselage Body */}
-                    <path d="M210 200 L210 660 L290 660 L290 200" />
-                    
-                    {/* Center Spine Detail */}
-                    <path d="M235 300 L235 550 C235 580 220 620 210 640" strokeDasharray="4 2" />
-                    <path d="M265 300 L265 550 C265 580 280 620 290 640" strokeDasharray="4 2" />
-                    
-                    {/* Interstage Ring */}
-                    <line x1="210" y1="200" x2="290" y2="200" />
-                    <line x1="210" y1="210" x2="290" y2="210" />
+                    <rect x="200" y="160" width="100" height="100" />
+                    <path d="M230 260 L240 280 L260 280 L270 260" strokeDasharray="2 2" opacity="0.6"/>
+                    <ellipse cx="250" cy="210" rx="40" ry="10" opacity="0.3" />
+                    <line x1="200" y1="160" x2="300" y2="160" strokeWidth="2"/>
                 </motion.g>
 
-                {/* --- GROUP 3: FAIRING (NOSE CONE) --- */}
+                {/* --- GROUP 3: FAIRING (WIDENED TO MATCH) --- */}
                 <motion.g 
                   onClick={() => setActiveStage("fairing")}
                   className="cursor-pointer"
@@ -117,22 +111,19 @@ export default function OrbitonPage() {
                   }}
                   fill="transparent"
                 >
-                   {/* Nose Cone */}
-                   <path d="M210 200 C210 100 250 50 250 50 C250 50 290 100 290 200 Z" />
-                   
-                   {/* Detail Lines */}
-                   <path d="M210 150 C230 140 270 140 290 150" />
-                   <line x1="250" y1="50" x2="250" y2="200" strokeDasharray="5 5" opacity="0.5"/>
+                   {/* Widened base from 210/290 to 200/300 */}
+                   <path d="M200 160 C200 100 250 40 250 40 C250 40 300 100 300 160 Z" />
+                   <path d="M220 140 C230 130 270 130 280 140 L280 160 L220 160 Z" strokeDasharray="2 2" opacity="0.5"/>
+                   <line x1="250" y1="40" x2="250" y2="160" opacity="0.3" />
                 </motion.g>
                 
-                {/* Decorative Text */}
-                <text x="380" y="500" fill="rgba(59,130,246,0.4)" fontSize="10" className="font-mono tracking-widest rotate-90">WING STRUCT</text>
-                <text x="245" y="400" fill="rgba(59,130,246,0.4)" fontSize="8" className="font-mono tracking-tighter -rotate-90">CORE</text>
+                <text x="360" y="600" fill="rgba(59,130,246,0.4)" fontSize="10" className="font-mono tracking-widest rotate-90">HEAVY BOOST</text>
+                <text x="320" y="210" fill="rgba(59,130,246,0.4)" fontSize="10" className="font-mono tracking-widest">STG-2</text>
 
             </svg>
         </div>
 
-        {/* RIGHT COLUMN: SPECS (Unchanged functionality) */}
+        {/* RIGHT COLUMN: SPECS */}
         <div className="lg:col-span-7 space-y-8">
           
           <div>
@@ -157,24 +148,24 @@ export default function OrbitonPage() {
 
              {activeStage === "stage1" && (
                  <StageDetails 
-                    title="Stage 1: Lifting Body Booster"
-                    desc="A reusable lifting-body stage powered by 12x VORTEX-1 RDE engines. The cranked-arrow wings provide aerodynamic lift during reentry, reducing fuel needs."
+                    title="Stage 1: Heavy Lifting Body"
+                    desc="Expanded wing surface area provides superior glide ratio during reentry. The widened core accommodates increased propellant load for higher delta-V."
                     stats={[
-                        { label: "Engines", value: "12x VORTEX-1" },
-                        { label: "Thrust", value: "210 kN each" },
-                        { label: "Burn Time", value: "180 s" }, 
+                        { label: "Engines", value: "9x VORTEX-1" },
+                        { label: "Thrust", value: "2400 kN" }, // Increased thrust
+                        { label: "Wing Span", value: "12 m" }, 
                     ]}
                  />
              )}
 
             {activeStage === "stage2" && (
                  <StageDetails 
-                    title="Stage 2: Core Fuselage"
-                    desc="The central core acts as the orbital insertion stage, carrying the propellant load for the final push to LEO."
+                    title="Stage 2: Vacuum Insertion"
+                    desc="A specialized vacuum-optimized upper stage. It sits atop the booster and ignites after stage separation to push the payload into its final orbital velocity."
                     stats={[
-                        { label: "Engine", value: "3x VORTEX-Vac" },
-                        { label: "Thrust", value: "80 kN each" },
-                        { label: "Burn Time", value: "320 s" }
+                        { label: "Engine", value: "1x VORTEX-Vac" },
+                        { label: "Thrust", value: "110 kN" },
+                        { label: "Restart", value: "Multi-Ignition" }
                     ]}
                  />
              )}
@@ -182,29 +173,28 @@ export default function OrbitonPage() {
             {activeStage === "fairing" && (
                  <StageDetails 
                     title="Payload Fairing"
-                    desc="Aerodynamic nose cone protecting sensitive satellite payloads during atmospheric ascent."
+                    desc="Aerodynamic nose cone protecting sensitive satellite payloads during atmospheric ascent. Splits into two halves once in space."
                     stats={[
-                        { label: "Diameter", value: "2.2 m" }, 
-                        { label: "Volume", value: "14 m³" },
-                        { label: "Material", value: "Carbon Fiber composites" }
+                        { label: "Diameter", value: "2.8 m" }, 
+                        { label: "Height", value: "4.0 m" },
+                        { label: "Material", value: "Carbon Composite" }
                     ]}
                  />
              )}
           </div>
 
-          {/* REALISTIC SPECS TABLE */}
           <div className="bg-black/30 border border-white/10 rounded-xl overflow-hidden">
              <div className="grid grid-cols-2 md:grid-cols-2 divide-x divide-white/10 border-b border-white/10">
                 <StatBox label="Height" value="24.0 m / 78.7 ft" /> 
-                <StatBox label="Diameter" value="2.2 m / 7.2 ft" />
+                <StatBox label="Diameter" value="2.8 m / 9.2 ft" />
              </div>
              <div className="grid grid-cols-2 md:grid-cols-2 divide-x divide-white/10 border-b border-white/10">
-                <StatBox label="Payload to LEO" value="600 kg / 1323 lb" /> 
-                <StatBox label="Payload to SSO" value="450 kg / 992 lb" />
+                <StatBox label="Payload to LEO" value="850 kg / 1873 lb" /> 
+                <StatBox label="Payload to SSO" value="600 kg / 1322 lb" />
              </div>
              <div className="grid grid-cols-2 md:grid-cols-2 divide-x divide-white/10">
-                <StatBox label="Launch Cost" value="$4.5 Million" /> 
-                <StatBox label="Gross Mass" value="38,000 kg" />
+                <StatBox label="Launch Cost" value="$5.2 Million" /> 
+                <StatBox label="Gross Mass" value="42,000 kg" />
              </div>
           </div>
         </div>
@@ -213,8 +203,6 @@ export default function OrbitonPage() {
     </PageLayout>
   );
 }
-
-// --- SUB-COMPONENTS ---
 
 function StageDetails({ title, desc, stats }: any) {
     return (
