@@ -15,9 +15,9 @@ export default function TechSpec() {
     { label: "Height", value: "24.0 m / 78.7 ft" },
     { label: "Diameter", value: "2.2 m / 7.2 ft" },
     { label: "Stages", value: "2 (Fully Reusable)" },
-    { label: "Payload to LEO", value: "450 kg / 992 lb" },
-    { label: "Payload to SSO", value: "350 kg / 772 lb" },
-    { label: "Thrust (Sea Level)", value: "1410 kN" },
+    { label: "Payload to LEO", value: "600 kg / 1323 lb" },
+    { label: "Payload to SSO", value: "450 kg / 992 lb" },
+    { label: "Thrust (Sea Level)", value: "2520 kN" },
     { label: "Propellant", value: "Methalox" }
   ];
 

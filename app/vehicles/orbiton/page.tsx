@@ -2,6 +2,7 @@
 
 import PageLayout from "@/app/components/PageLayout";
 import { motion } from "framer-motion";
+import { label } from "framer-motion/client";
 import { Rocket, Box, Wind, Zap } from "lucide-react";
 import { useState } from "react";
 
@@ -157,11 +158,11 @@ export default function OrbitonPage() {
              {activeStage === "stage1" && (
                  <StageDetails 
                     title="Stage 1: Lifting Body Booster"
-                    desc="A reusable lifting-body stage powered by 3x VORTEX-1 RDE engines. The cranked-arrow wings provide aerodynamic lift during reentry, reducing fuel needs."
+                    desc="A reusable lifting-body stage powered by 12x VORTEX-1 RDE engines. The cranked-arrow wings provide aerodynamic lift during reentry, reducing fuel needs."
                     stats={[
-                        { label: "Engines", value: "3x VORTEX-1" },
-                        { label: "Thrust", value: "210 kN" },
-                        { label: "Wingspan", value: "12 m" } 
+                        { label: "Engines", value: "12x VORTEX-1" },
+                        { label: "Thrust", value: "210 kN each" },
+                        { label: "Burn Time", value: "180 s" }, 
                     ]}
                  />
              )}
@@ -171,8 +172,8 @@ export default function OrbitonPage() {
                     title="Stage 2: Core Fuselage"
                     desc="The central core acts as the orbital insertion stage, carrying the propellant load for the final push to LEO."
                     stats={[
-                        { label: "Engine", value: "1x VORTEX-Vac" },
-                        { label: "Thrust", value: "45 kN" },
+                        { label: "Engine", value: "3x VORTEX-Vac" },
+                        { label: "Thrust", value: "80 kN each" },
                         { label: "Burn Time", value: "320 s" }
                     ]}
                  />
@@ -198,8 +199,8 @@ export default function OrbitonPage() {
                 <StatBox label="Diameter" value="2.2 m / 7.2 ft" />
              </div>
              <div className="grid grid-cols-2 md:grid-cols-2 divide-x divide-white/10 border-b border-white/10">
-                <StatBox label="Payload to LEO" value="450 kg / 992 lb" /> 
-                <StatBox label="Payload to SSO" value="300 kg / 661 lb" />
+                <StatBox label="Payload to LEO" value="600 kg / 1323 lb" /> 
+                <StatBox label="Payload to SSO" value="450 kg / 992 lb" />
              </div>
              <div className="grid grid-cols-2 md:grid-cols-2 divide-x divide-white/10">
                 <StatBox label="Launch Cost" value="$4.5 Million" /> 
