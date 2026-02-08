@@ -53,9 +53,9 @@ export default function Navbar() {
           {/* DESKTOP NAV */}
           <nav className="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-widest text-white/60">
             <NavLink href="/vehicles/orbiton" label="Vehicles" active={isActive("/vehicles/orbiton")} />
-            <NavLink href="/technology" label="Technology" active={isActive("/technology")} />
-            <NavLink href="/about" label="Mission" active={isActive("/about")} />
+            <NavLink href="/technology/engine" label="Technology" active={isActive("/technology")} />
             <NavLink href="/careers" label="Careers" active={isActive("/careers")} />
+            <NavLink href="/about" label="About" active={isActive("/about")} />
             
             {/* CTA Button */}
             <Link 
