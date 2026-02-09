@@ -12,33 +12,32 @@ export function PageWrapper({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative z-10 text-white min-h-screen px-6 pt-32 pb-20 max-w-4xl mx-auto">
-      
-      {/* Header Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
+    <div className="relative z-10 text-white min-h-screen px-6 pt-28 pb-20 max-w-3xl mx-auto">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="mb-16 border-b border-white/10 pb-8"
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="mb-14 border-b border-white/10 pb-8"
       >
-        <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tighter text-white">
-          {title}<span className="text-cyan-500">.</span>
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-5 tracking-tight text-white">
+          {title}
         </h1>
 
-        <p className="text-xl text-white/60 leading-relaxed font-light max-w-2xl">
+        <p className="text-base md:text-lg text-white/60 leading-relaxed max-w-xl">
           {intro}
         </p>
-      </motion.div>
+      </motion.header>
 
-      {/* Main Content */}
-      <motion.div
+      {/* Content */}
+      <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.8 }}
+        transition={{ delay: 0.15, duration: 0.6, ease: "easeOut" }}
         className="space-y-12"
       >
         {children}
-      </motion.div>
+      </motion.section>
     </div>
   );
 }
@@ -51,17 +50,15 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="group">
-      <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
-        <span className="w-1.5 h-6 bg-cyan-500 rounded-sm shadow-[0_0_10px_#22d3ee]"></span>
+    <section className="space-y-6">
+      <h2 className="text-xl font-semibold text-white flex items-center gap-3 tracking-tight">
+        <span className="w-1 h-5 bg-cyan-500 rounded-sm" />
         {title}
       </h2>
 
-      {/* Styled List */}
-      <ul className="space-y-4 text-white/70 leading-relaxed font-light pl-2">
-        {/* We map over children to ensure they get the correct styling if they are <li> elements */}
+      <div className="text-white/70 leading-relaxed text-sm md:text-base">
         {children}
-      </ul>
+      </div>
     </section>
   );
 }

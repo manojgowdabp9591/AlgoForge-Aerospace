@@ -14,7 +14,7 @@ export default function Partners() {
   ];
 
   return (
-    <section className="py-0 border-y border-white/10 bg-black relative z-20">
+    <section className="py-0 border-y border-white/10 bg-transparent relative z-20">
       <div className="max-w-7xl mx-auto px-6">
         <p className="text-center text-xs font-bold tracking-[0.3em] text-cyan-500 mb-10 uppercase opacity-90">
           Trusted by Industry Leaders

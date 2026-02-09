@@ -2,207 +2,199 @@
 
 import PageLayout from "../components/PageLayout";
 import { motion } from "framer-motion";
-import { Rocket, Cpu, Globe, Target, User, Zap, Flag, Flame, Wind } from "lucide-react";
+import { Rocket, Cpu, Globe, Flag, Flame } from "lucide-react";
 
 export default function AboutPage() {
   return (
-    <PageLayout 
-      title="Mission Log: Origin" 
-      subtitle="Redefining propulsion. Mastering detonation. Advancing humanity."
+    <PageLayout
+      title="About VSpace"
+      subtitle="Advancing propulsion physics to make space access faster, cheaper, and repeatable."
     >
       <div className="space-y-32 mt-10">
-
-        {/* =========================================
-            SECTION 1: THE FOUNDER (Personnel File 001)
-           ========================================= */}
+        {/* ================= FOUNDER ================= */}
         <div className="grid md:grid-cols-2 gap-16 items-center">
-          
-          {/* IMAGE / DOSSIER PHOTO */}
-          <motion.div 
-            initial={{ opacity: 0, x: -50 }}
+          {/* IMAGE */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1 }}
-            className="relative flex justify-center group"
+            transition={{ duration: 0.8 }}
+            className="relative flex justify-center"
           >
-            {/* Holographic Glow */}
-            <div className="absolute inset-0 bg-cyan-500/20 blur-[80px] rounded-full pointer-events-none group-hover:bg-cyan-500/30 transition duration-1000" />
-            
-            {/* Image Frame */}
-            <div className="relative w-80 h-96 rounded-2xl overflow-hidden border border-white/20 shadow-[0_0_20px_rgba(34,211,238,0.2)] bg-black">
-              <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-              
-              {/* HUD Overlay */}
+            <div className="relative w-80 h-96 rounded-2xl overflow-hidden border border-white/20 bg-black">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />
               <div className="absolute bottom-4 left-4 z-20">
-                 <p className="text-xl font-bold text-white tracking-widest uppercase">Manoj Gowda B P</p>
-                 <p className="text-xs text-cyan-400 font-mono">CMD // ID: VTX-001</p>
+                <p className="text-lg font-semibold text-white">
+                  Manoj Gowda B P
+                </p>
+                <p className="text-xs text-cyan-400 font-mono">
+                  Founder & CEO
+                </p>
               </div>
-
               <img
                 src="/founder.png"
-                alt="Manoj Gowda B P - Founder"
-                className="w-fit h-fit object-cover opacity-90 group-hover:scale-105 transition duration-700"
+                alt="Manoj Gowda B P"
+                className="w-fit h-fit object-cover opacity-90"
               />
             </div>
           </motion.div>
 
-          {/* TEXT CONTENT */}
+          {/* TEXT */}
           <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1 }}
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
           >
             <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400 border border-cyan-500/20">
-                    <Flag size={24} />
-                </div>
-                <h2 className="text-4xl font-extrabold text-white">The Propulsion Bottleneck.</h2>
+              <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400 border border-cyan-500/20">
+                <Flag size={20} />
+              </div>
+              <h2 className="text-3xl font-semibold text-white">
+                Breaking the Propulsion Plateau
+              </h2>
             </div>
 
-            <div className="space-y-6 text-lg text-white/70 leading-relaxed font-light">
+            <div className="space-y-6 text-base text-white/70 leading-relaxed">
               <p>
-                For sixty years, rocket engines have been stuck in the era of deflagration—burning fuel at constant pressure. 
-                I founded <span className="text-cyan-400 font-bold">Vortex Aerospace</span> to break this stagnation.
+                For decades, chemical rocket propulsion has advanced
+                incrementally. Traditional engines rely on constant-pressure
+                combustion, which imposes fundamental efficiency limits.
               </p>
+
               <p>
-                We are not just building another launch vehicle; we are pioneering <strong>Rotary Detonation Engines (RDE)</strong>. 
-                By harnessing the power of supersonic shockwaves, we extract more energy from every gram of fuel. 
-                This isn't just an improvement; it's a phase shift in physics.
+                I founded <span className="text-cyan-400 font-semibold">
+                Vortex Aerospace</span> to challenge that assumption by pursuing
+                pressure-gain combustion through rotary detonation engines.
+                This approach has the potential to extract more usable energy
+                from the same propellant mass.
               </p>
-              
-              <div className="bg-white/5 border-l-4 border-cyan-400 p-6 my-8 rounded-r-xl backdrop-blur-sm">
-                 <p className="italic text-white/90 font-medium">
-                  "Conventional engines burn. Ours detonate. We are building the machinery to make spaceflight not just possible, but efficient."
-                 </p>
-              </div>
-              
-              <div className="flex gap-10 mt-8 border-t border-white/10 pt-6">
-                 <Stat label="Role" value="Founder & CEO" />
-                 <Stat label="Clearance" value="Level 5" />
-                 <Stat label="Focus" value="Strategy" />
+
+              <blockquote className="border-l-2 border-cyan-400 pl-6 text-white/80 italic">
+                “Our objective is not novelty. It’s efficiency, repeatability,
+                and systems that scale into real launch operations.”
+              </blockquote>
+
+              <div className="flex gap-10 pt-6 border-t border-white/10">
+                <Stat label="Role" value="Founder & CEO" />
+                <Stat label="Focus" value="Strategy & Execution" />
               </div>
             </div>
           </motion.div>
         </div>
 
-        {/* =========================================
-            SECTION 2: THE CO-FOUNDER (Personnel File 002)
-           ========================================= */}
+        {/* ================= CO-FOUNDER ================= */}
         <div className="grid md:grid-cols-2 gap-16 items-center">
-          
-          {/* TEXT CONTENT */}
+          {/* TEXT */}
           <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1 }}
-              className="order-2 md:order-1"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="order-2 md:order-1"
           >
             <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400 border border-purple-500/20">
-                    <Cpu size={24} />
-                </div>
-                <h2 className="text-4xl font-extrabold text-white">Taming the Chaos.</h2>
+              <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400 border border-purple-500/20">
+                <Cpu size={20} />
+              </div>
+              <h2 className="text-3xl font-semibold text-white">
+                Engineering for Control and Reliability
+              </h2>
             </div>
 
-            <div className="space-y-6 text-lg text-white/70 leading-relaxed font-light">
+            <div className="space-y-6 text-base text-white/70 leading-relaxed">
               <p>
-                A detonation wave travels at 2,000 meters per second. Controlling that is like trying to bottle a lightning storm. 
-                My focus is on the architecture that makes this possible: the <strong>VORTEX-1</strong> engine.
-              </p>
-              <p>
-                We are combining advanced computational fluid dynamics with high-temperature alloy printing to build 
-                combustion chambers that don't just survive the shockwaves—they thrive on them. 
-                The result is a lighter, more powerful engine with fewer moving parts.
+                Detonation-based propulsion introduces extreme thermal and
+                pressure environments. Making it viable requires disciplined
+                system architecture and careful control of instabilities.
               </p>
 
-              <div className="bg-white/5 border-l-4 border-purple-500 p-6 my-8 rounded-r-xl backdrop-blur-sm">
-                 <p className="italic text-white/90 font-medium">
-                  "Complexity is the enemy of reliability. By using detonation physics, we eliminate heavy turbomachinery and let the shockwaves do the work."
-                 </p>
-              </div>
+              <p>
+                My work focuses on the <strong>VORTEX-1</strong> engine
+                architecture — combining high-fidelity simulation, materials
+                engineering, and test-driven iteration to achieve reliable,
+                repeatable operation.
+              </p>
 
-              <div className="flex gap-10 mt-8 border-t border-white/10 pt-6">
-                 <Stat label="Role" value="Co-Founder & CTO" />
-                 <Stat label="System" value="Propulsion" />
-                 <Stat label="Status" value="Active" />
+              <blockquote className="border-l-2 border-purple-400 pl-6 text-white/80 italic">
+                “Simplicity improves reliability. The goal is fewer failure
+                modes, not more complexity.”
+              </blockquote>
+
+              <div className="flex gap-10 pt-6 border-t border-white/10">
+                <Stat label="Role" value="Co-Founder & CTO" />
+                <Stat label="System" value="Propulsion" />
               </div>
             </div>
           </motion.div>
 
-          {/* IMAGE / DOSSIER PHOTO */}
-          <motion.div 
-            initial={{ opacity: 0, x: 50 }}
+          {/* IMAGE */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1 }}
-            className="relative flex justify-center order-1 md:order-2 group"
+            transition={{ duration: 0.8 }}
+            className="relative flex justify-center order-1 md:order-2"
           >
-            {/* Holographic Glow */}
-            <div className="absolute inset-0 bg-purple-500/20 blur-[80px] rounded-full pointer-events-none group-hover:bg-purple-500/30 transition duration-1000" />
-            
-            {/* Image Frame */}
-            <div className="relative w-80 h-96 rounded-2xl overflow-hidden border border-white/20 shadow-[0_0_20px_rgba(168,85,247,0.2)] bg-black">
-              <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-              
-              {/* HUD Overlay */}
+            <div className="relative w-80 h-96 rounded-2xl overflow-hidden border border-white/20 bg-black">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />
               <div className="absolute bottom-4 left-4 z-20">
-                 <p className="text-xl font-bold text-white tracking-widest uppercase">Sandeep S M</p>
-                 <p className="text-xs text-purple-400 font-mono">CTO // ID: VTX-002</p>
+                <p className="text-lg font-semibold text-white">
+                  Sandeep S M
+                </p>
+                <p className="text-xs text-purple-400 font-mono">
+                  Co-Founder & CTO
+                </p>
               </div>
-
               <img
                 src="/Co-founder.jpeg"
-                alt="Sandeep S M - Co-Founder"
-                className="w-fit h-fit object-cover opacity-90 group-hover:scale-105 transition duration-700"
+                alt="Sandeep S M"
+                className="w-fit h-fit object-cover opacity-90"
               />
             </div>
           </motion.div>
-
         </div>
 
-        {/* =========================================
-            SECTION 3: CORE DIRECTIVES (Values)
-           ========================================= */}
+        {/* ================= PRINCIPLES ================= */}
         <div className="grid md:grid-cols-3 gap-6 pt-20 border-t border-white/10">
-            <ValueCard 
-                title="Pressure Gain Combustion" 
-                icon={Flame}
-                desc="We don't just burn fuel; we detonate it. Harnessing pressure gain increases thermodynamic efficiency by 15%." 
-            />
-            <ValueCard 
-                title="Rapid Reusability" 
-                icon={Rocket}
-                desc="Our Lifting Body architecture allows for aircraft-like operations. Land, refuel, and launch again within 24 hours." 
-            />
-            <ValueCard 
-                title="Democratized Orbit" 
-                icon={Globe}
-                desc="By slashing the cost of propulsion, we are opening the door for students, startups, and scientists to access space." 
-            />
+          <ValueCard
+            title="Pressure-Gain Combustion"
+            icon={Flame}
+            desc="Rotary detonation enables higher thermodynamic efficiency by increasing chamber pressure during combustion."
+          />
+          <ValueCard
+            title="Rapid Reusability"
+            icon={Rocket}
+            desc="Vehicle architecture designed for fast inspection, minimal refurbishment, and high launch cadence."
+          />
+          <ValueCard
+            title="Accessible Orbit"
+            icon={Globe}
+            desc="Lowering launch cost unlocks scientific, commercial, and educational access to space."
+          />
         </div>
-
       </div>
     </PageLayout>
   );
 }
 
-// --- SUB-COMPONENTS ---
+/* ---------- HELPERS ---------- */
 
-function Stat({ label, value }: { label: string, value: string }) {
-    return (
-        <div>
-            <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold mb-1">{label}</p>
-            <p className="text-sm font-mono text-white font-bold">{value}</p>
-        </div>
-    )
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-widest text-white/40 font-semibold mb-1">
+        {label}
+      </p>
+      <p className="text-sm font-mono text-white font-bold">{value}</p>
+    </div>
+  );
 }
 
 function ValueCard({ title, desc, icon: Icon }: any) {
-    return (
-        <div className="p-8 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition duration-300">
-            <div className="mb-4 text-cyan-400">
-                <Icon size={32} />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
-            <p className="text-white/60 leading-relaxed text-sm">{desc}</p>
-        </div>
-    )
+  return (
+    <div className="p-8 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition">
+      <div className="mb-4 text-cyan-400">
+        <Icon size={28} />
+      </div>
+      <h3 className="text-base font-semibold text-white mb-3">{title}</h3>
+      <p className="text-white/60 leading-relaxed text-sm">{desc}</p>
+    </div>
+  );
 }

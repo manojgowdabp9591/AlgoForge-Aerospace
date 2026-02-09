@@ -2,72 +2,90 @@
 
 import PageLayout from "../components/PageLayout";
 import { motion } from "framer-motion";
-import { Activity, TrendingUp, PieChart, Globe, Download, ArrowUpRight } from "lucide-react";
+import {
+  Activity,
+  TrendingUp,
+  PieChart,
+  Globe,
+  Download,
+  ArrowUpRight,
+} from "lucide-react";
 
 export default function InvestorsPage() {
   return (
-    <PageLayout 
-      title="Investor Relations" 
-      subtitle="Fueling the infrastructure for the next century of human history."
+    <PageLayout
+      title="Investor Relations"
+      subtitle="Building the physical infrastructure required for the next era of space operations."
     >
       {/* 1. TOP STATS GRID */}
       <div className="grid md:grid-cols-4 gap-6 mb-16">
-        <StatCard label="Current Round" value="Series B" icon={Activity} />
-        <StatCard label="Valuation" value="$1.5B" icon={TrendingUp} />
-        <StatCard label="Total Raised" value="$145M" icon={PieChart} />
-        <StatCard label="Global Sites" value="4" icon={Globe} />
+        <StatCard label="Funding Stage" value="Private · Growth" icon={Activity} />
+        <StatCard
+          label="Implied Valuation"
+          value="Confidential"
+          icon={TrendingUp}
+        />
+        <StatCard
+          label="Capital Deployed"
+          value="$145M+"
+          icon={PieChart}
+        />
+        <StatCard label="Operating Sites" value="4" icon={Globe} />
       </div>
 
       <div className="grid md:grid-cols-3 gap-10">
-        
         {/* 2. LEFT COLUMN: REPORTS */}
         <div className="md:col-span-2 space-y-6">
           <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-2">
-            <span className="w-1 h-8 bg-cyan-500 rounded-full mr-2"></span>
-            Financial & Mission Reports
+            <span className="w-1 h-8 bg-cyan-500 rounded-full mr-2" />
+            Updates & Technical Briefings
           </h2>
-          
-          <ReportCard 
-            title="Mission Success Memo: VORTEX-1 Test" 
-            date="Today"
-            desc="Preliminary telemetry confirms nominal detonation stability. Full thrust duration achieved at Test Stand A."
+
+          <ReportCard
+            title="VORTEX-1 Ground Test Summary"
+            date="Recent"
+            desc="Initial rotary detonation engine testing demonstrates stable wave propagation and nominal chamber pressures across the planned throttle envelope."
           />
-          <ReportCard 
-            title="Q4 2025 Quarterly Report" 
-            date="Jan 15, 2026"
-            desc="Detailed breakdown of Orbiton-1 manufacturing costs and Q1 2026 burn rate projections."
+          <ReportCard
+            title="Q4 Engineering & Financial Update"
+            date="Jan 2026"
+            desc="Summary of Orbiton-1 vehicle progress, manufacturing readiness, and forward operating expense outlook."
           />
-          <ReportCard 
-            title="Series B Funding Memo" 
-            date="Oct 10, 2025"
-            desc="Overview of capital allocation for the new 'Star-Forge' composite manufacturing facility."
+          <ReportCard
+            title="Growth Capital Deployment Memo"
+            date="Oct 2025"
+            desc="Capital allocation strategy supporting propulsion maturation, vehicle integration, and composite manufacturing scale-up."
           />
         </div>
 
-        {/* 3. RIGHT COLUMN: STOCK MARKET CHART */}
+        {/* 3. RIGHT COLUMN: MARKET VISUAL (CONCEPTUAL) */}
         <div className="bg-black border border-white/20 rounded-xl p-6 h-fit shadow-2xl relative overflow-hidden group">
-          
-          {/* Header: Stock Ticker Style */}
+          {/* Header */}
           <div className="flex justify-between items-end mb-6 border-b border-white/10 pb-4">
             <div>
-              <h3 className="text-3xl font-black text-white tracking-widest group-hover:text-green-400 transition duration-500">VTX</h3>
-              <p className="text-xs text-white/40 uppercase tracking-wider">VORTEX AEROSPACE INC.</p>
+              <h3 className="text-2xl font-extrabold text-white tracking-wider group-hover:text-cyan-400 transition duration-500">
+                Vortex Aerospace
+              </h3>
+              <p className="text-xs text-white/40 uppercase tracking-wider">
+                Private Company · Internal Performance Snapshot
+              </p>
             </div>
             <div className="text-right">
-              {/* Animated Price Spike */}
-              <motion.div 
+              <motion.div
                 initial={{ scale: 1 }}
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.5, repeat: 1, repeatDelay: 5 }}
+                animate={{ scale: [1, 1.08, 1] }}
+                transition={{ duration: 0.5, repeat: 1, repeatDelay: 6 }}
               >
-                <p className="text-3xl font-mono font-bold text-green-400">▲ $54.20</p>
+                <p className="text-2xl font-mono font-bold text-cyan-400">
+                  ▲ Execution Momentum
+                </p>
               </motion.div>
-              <p className="text-xs text-green-400/70 font-bold">+28% (Today)</p>
+              <p className="text-xs text-white/50 font-semibold">
+                Milestone velocity increasing
+              </p>
             </div>
           </div>
-
-          {/* THE CHART CONTAINER */}
-          <div className="relative h-64 w-full bg-white/5 rounded border border-white/10 p-2">
+<div className="relative h-64 w-full bg-white/5 rounded border border-white/10 p-2">
             
             {/* Grid Lines */}
             <div className="absolute inset-0 grid grid-rows-4 grid-cols-4 gap-0 pointer-events-none opacity-10">
@@ -160,22 +178,25 @@ export default function InvestorsPage() {
             View on NYSE <ArrowUpRight size={16} />
           </button>
         </div>
-
-      </div>
+        </div>
     </PageLayout>
   );
 }
 
-// --- SUB-COMPONENTS ---
+/* ---------- SUB-COMPONENTS ---------- */
 
 function StatCard({ label, value, icon: Icon }: any) {
   return (
-    <div className="group relative p-6 bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-cyan-500/50 transition duration-500">
-      <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 group-hover:text-cyan-500 group-hover:scale-110 transition duration-500">
-        <Icon size={48} />
+    <div className="group relative p-6 bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-cyan-500/40 transition duration-500">
+      <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-80 group-hover:text-cyan-500 transition duration-500">
+        <Icon size={44} />
       </div>
-      <p className="text-white/50 text-xs uppercase tracking-widest font-bold mb-2">{label}</p>
-      <p className="text-3xl font-mono text-white group-hover:text-cyan-400 transition">{value}</p>
+      <p className="text-white/50 text-xs uppercase tracking-widest font-semibold mb-2">
+        {label}
+      </p>
+      <p className="text-2xl font-mono text-white group-hover:text-cyan-400 transition">
+        {value}
+      </p>
     </div>
   );
 }
@@ -184,16 +205,18 @@ function ReportCard({ title, date, desc }: any) {
   return (
     <div className="group p-6 border border-white/10 rounded-xl bg-white/5 hover:bg-white/10 hover:border-cyan-500/30 transition cursor-pointer relative overflow-hidden">
       <div className="flex justify-between items-start mb-3">
-        <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition">{title}</h3>
+        <h3 className="text-base md:text-lg font-semibold text-white group-hover:text-cyan-400 transition">
+          {title}
+        </h3>
         <span className="text-[10px] font-mono font-bold text-cyan-400 bg-cyan-900/20 px-2 py-1 rounded border border-cyan-500/20">
-            {date}
+          {date}
         </span>
       </div>
       <p className="text-white/60 mb-6 text-sm leading-relaxed">{desc}</p>
-      
-      <div className="flex items-center gap-2 text-xs font-bold text-white/40 group-hover:text-white transition uppercase tracking-wider">
+
+      <div className="flex items-center gap-2 text-xs font-semibold text-white/40 group-hover:text-white transition uppercase tracking-wider">
         <Download size={14} />
-        <span>Download Report</span>
+        <span>Download Brief</span>
       </div>
     </div>
   );
