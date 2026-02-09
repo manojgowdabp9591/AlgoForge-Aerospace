@@ -1,30 +1,33 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google"; 
 import "./globals.css";
+
+// 1. COMPONENTS (Global UI)
 import Galaxy from "./components/Galaxy";
-import ParallaxGalaxy from "./components/ParallaxGalaxy";
-import Navbar from "./components/Navbar";
 import Preloader from "./components/Preloader";
 import Footer from "./components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// 2. LOAD MODERN AEROSPACE FONTS
+const spaceGrotesk = Space_Grotesk({ 
+  subsets: ["latin"], 
+  variable: "--font-space",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const inter = Inter({ 
+  subsets: ["latin"], 
+  variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Vortex Aerospace | Advanced Propulsion Systems",
+  title: "Vortex Aerospace | Defying Gravity",
   description: "Vortex Aerospace is an aerospace manufacturer building the next generation of reusable rockets powered by Rotary Detonation Engines (RDE).",
   keywords: ["Vortex", "Aerospace", "RDE", "Rocket", "Space", "India", "Tech", "Startup", "Propulsion"],
   openGraph: {
     title: "Vortex Aerospace | Advancing Humanity",
     description: "Building the infrastructure for the next century of human history with detonation-based propulsion.",
-    url: "https://vortex-aerospace.vercel.app", // Update this URL when you deploy
+    url: "https://vortex-aerospace.vercel.app", 
     siteName: "Vortex Aerospace",
     images: [
       {
@@ -51,23 +54,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
+        className={`${spaceGrotesk.variable} ${inter.variable} antialiased bg-black text-white selection:bg-cyan-500/30 selection:text-cyan-100 font-sans`}
       >
-        {/* 1. Global Backgrounds */}
+        {/* 1. Global Backgrounds (Persistent across routes) */}
         <Galaxy />
-        <ParallaxGalaxy />
+        
+        {/* 2. Loading State */}
         <Preloader />
-
-        {/* 2. Navigation (Fixed Top) */}
-        <Navbar />
 
         {/* 3. Main Page Content */}
         {children}
 
-        {/* 4. Global Footer (Always at bottom) */}
+        {/* 4. Footer */}
         <Footer />
+
       </body>
     </html>
   );

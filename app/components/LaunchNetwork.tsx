@@ -10,7 +10,7 @@ const GlobeTpl = dynamic(() => import('react-globe.gl'), { ssr: false });
 
 export default function LaunchNetwork() {
   return (
-    <section className="relative w-full bg-black overflow-hidden flex items-center min-h-[800px] border-y border-white/10">
+    <section className="relative w-full bg-transparent overflow-hidden flex items-center min-h-[800px] border-y border-white/10">
       
       {/* Background Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.03)_1px,transparent_1px)] bg-[size:60px_60px]"></div>

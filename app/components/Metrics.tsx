@@ -26,7 +26,7 @@ export default function Metrics() {
   ];
 
   return (
-    <section className="py-32 relative z-10 border-y border-white/5 bg-black/40 backdrop-blur-sm">
+    <section className="py-32 relative z-10 border-y border-white/10 bg-transparent">
       <div className="max-w-7xl mx-auto px-6">
         
         <motion.div 

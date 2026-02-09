@@ -4,15 +4,16 @@ import { Twitter, Linkedin, Youtube, Instagram, Rocket } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="relative z-10 bg-black border-t border-white/10 pt-20 pb-10">
+    <footer className="relative z-10 bg-transparent border-t border-white/10 pt-20 pb-10">
       <div className="max-w-7xl mx-auto px-6">
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+
           {/* Column 1: Brand */}
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-6 group">
-                <div className="p-2 bg-cyan-900/20 border border-cyan-500/30 rounded group-hover:bg-cyan-500/20 group-hover:border-cyan-400 transition-all duration-300">
-                    <Rocket className="text-cyan-400 w-6 h-6 group-hover:-rotate-45 transition-transform" />
+                <div className="flex items-center gap-3 relative z-50">
+            <img src="/Vortex-Aerospace-logo.png" alt="Vortex Aerospace Logo" className="h-9" />
                 </div>
                 <div>
                     <h2 className="text-xl font-black tracking-[0.2em] text-white leading-none">

@@ -33,14 +33,14 @@ export default function AboutPage() {
               
               {/* HUD Overlay */}
               <div className="absolute bottom-4 left-4 z-20">
-                 <p className="text-xl font-bold text-white tracking-widest uppercase">Manoj Gowda</p>
+                 <p className="text-xl font-bold text-white tracking-widest uppercase">Manoj Gowda B P</p>
                  <p className="text-xs text-cyan-400 font-mono">CMD // ID: VTX-001</p>
               </div>
 
               <img
-                src="/founder.jpeg"
+                src="/founder.png"
                 alt="Manoj Gowda B P - Founder"
-                className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition duration-700"
+                className="w-fit h-fit object-cover opacity-90 group-hover:scale-105 transition duration-700"
               />
             </div>
           </motion.div>
@@ -149,9 +149,9 @@ export default function AboutPage() {
               </div>
 
               <img
-                src="/cofounder.jpeg"
+                src="/Co-founder.jpeg"
                 alt="Sandeep S M - Co-Founder"
-                className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition duration-700"
+                className="w-fit h-fit object-cover opacity-90 group-hover:scale-105 transition duration-700"
               />
             </div>
           </motion.div>
