@@ -57,10 +57,10 @@ export default function Navbar() {
           {/* DESKTOP NAV */}
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-white/70">
             <Link
-              href="/#mission"
+              href="/programs"
               className="hover:text-cyan-400 transition-colors"
             >
-              Mission
+              Programs
             </Link>
             <Link
               href="/technology/engine"

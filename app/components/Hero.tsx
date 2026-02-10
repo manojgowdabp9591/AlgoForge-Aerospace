@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 
 const TAGLINES = [
-  "LOWER COST TO ORBIT",
+  "REUSABLE ORBITAL LAUNCH SYSTEMS",
   "ROTARY DETONATION PROPULSION",
-  "ON-DEMAND ORBITAL ACCESS",
-  "SCALABLE ENGINE ARCHITECTURE",
+  "HUMAN-RATED SUBORBITAL FLIGHT",
+  "ULTRA-FAST POINT-TO-POINT TRAVEL",
 ];
 
 function ScrollingTaglines() {
@@ -71,24 +71,26 @@ export default function Hero() {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
           </span>
           <span className="text-[10px] md:text-xs font-semibold tracking-widest text-cyan-300 uppercase">
-            System Online
+            Reusable Orbital Launch Systems Development
           </span>
+
+
         </div>
 
         {/* HEADLINE */}
         <h1 className="text-[clamp(3rem,6vw,4.25rem)] font-extrabold tracking-tight leading-[1.05]">
-          The <span className="text-cyan-400">Vortex</span> has awakened
+          Reusable Launch Systems
+          <br />
+          <span className="text-cyan-400">Beyond Earth Orbit</span>
         </h1>
 
         {/* SUBHEAD */}
         <p className="mt-6 text-base md:text-xl font-light text-white/80 max-w-3xl mx-auto leading-relaxed">
-          <span className="text-white font-semibold">Vortex Aerospace</span> is
-          engineering next-generation rocket propulsion using{" "}
-          <span className="text-cyan-400 font-medium">
-            rotary detonation physics
-          </span>
-          — enabling higher efficiency, simpler architectures, and scalable
-          orbital access for future missions.
+          <span className="text-white font-semibold">Vortex Aerospace</span> is an
+          engineering-led launch company developing reusable rocket systems for
+          orbital satellite deployment. The same vehicle architecture supports
+          human suborbital spaceflight and lays the foundation for ultra-fast
+          point-to-point Earth travel.
         </p>
 
         {/* SCROLLING TAGLINES */}

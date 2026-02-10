@@ -28,6 +28,35 @@ export default function Home() {
       {/* KEY METRICS */}
       <Metrics />
 
+      {/* HUMAN SPACEFLIGHT */}
+      <section className="py-24 px-6 max-w-6xl mx-auto relative">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight">
+              Human Spaceflight
+              <br />
+              <span className="text-cyan-500">Built on Orbital Systems</span>
+            </h2>
+            <div className="w-16 h-1 bg-cyan-500 mb-8" />
+          </div>
+
+          <div>
+            <p className="text-white/70 text-base md:text-lg leading-relaxed font-light mb-6">
+              <strong className="text-white">Vortex Aerospace</strong> is developing human-rated suborbital flight
+              capability using the same reusable rocket systems designed for
+              orbital satellite launch.
+            </p>
+
+            <p className="text-white/70 text-base md:text-lg leading-relaxed font-light">
+              Initial missions focus on suborbital space tourism and research,
+              progressing toward ultra-fast point-to-point Earth travel on
+              suborbital trajectories. This phased approach prioritizes safety,
+              regulatory alignment, and operational maturity.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* MISSION */}
       <section
         id="mission"
@@ -53,15 +82,17 @@ export default function Home() {
             <p className="text-white/70 text-base md:text-lg leading-relaxed font-light mb-6">
               <strong className="text-white">Vortex Aerospace</strong> is an
               engineering-led launch company focused on reducing the cost and
-              complexity of orbital access. Existing launch systems are
-              constrained by low reuse, long turnaround times, and limited
-              responsiveness.
+              complexity of orbital access. Our reusable launch systems are
+              designed to support frequent, responsive satellite deployment to
+              low Earth orbit.
             </p>
 
             <p className="text-white/70 text-base md:text-lg leading-relaxed font-light mb-8">
-              Our approach combines reusable vehicle architecture with
-              pressure-gain combustion through rotary detonation propulsion,
-              enabling faster launch readiness and scalable operations.
+              The same vehicle architecture also enables human suborbital
+              missions, forming the foundation for space tourism and ultra-fast
+              point-to-point Earth travel. These capabilities are developed as
+              extensions of our orbital launch systems, leveraging shared
+              propulsion, guidance, and reusability technologies.
             </p>
 
             <Link
@@ -136,27 +167,33 @@ export default function Home() {
 
         <div className="space-y-12 border-l-2 border-white/10 pl-8 relative ml-4 md:ml-0">
           <RoadmapItem
-            year="2026"
+            year="2027"
             title="VORTEX-1 Engine Static Fire"
             desc="Full-duration ground testing of a flight-weight rotary detonation propulsion system."
             status="complete"
           />
           <RoadmapItem
-            year="2027"
+            year="2028"
             title="Suborbital VTVL Demonstration"
             desc="Low-altitude flight testing to validate guidance, navigation, control, and landing systems."
             status="active"
           />
           <RoadmapItem
-            year="2028"
+            year="2030"
             title="Orbiton-1 First Orbital Attempt"
             desc="Initial orbital launch demonstration with payload delivery to low Earth orbit."
             status="pending"
           />
           <RoadmapItem
-            year="2030"
-            title="Commercial Launch Operations"
-            desc="Scaled launch cadence with rapid turnaround and operational reusability."
+            year="2032"
+            title="Commercial Orbital Launch Operations"
+            desc="Routine satellite launch services with reusable vehicles and rapid turnaround."
+            status="pending"
+          />
+          <RoadmapItem
+            year="2035"
+            title="Human Suborbital Flight & Point-to-Point Demonstrations"
+            desc="Human-rated suborbital missions enabling space tourism and ultra-fast Earth travel using shared launch systems."
             status="pending"
           />
         </div>
@@ -186,7 +223,8 @@ function RoadmapItem({
     glow = "shadow-[0_0_15px_#22d3ee]";
   } else if (status === "active") {
     dotColor = "bg-white";
-    glow = "shadow-[0_0_15px_rgba(255,255,255,0.5)] animate-pulse";
+    glow =
+      "shadow-[0_0_15px_rgba(255,255,255,0.5)] animate-pulse";
   }
 
   return (
