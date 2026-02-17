@@ -23,7 +23,7 @@ export default function Metrics() {
     },
     {
       label: "Launch Window",
-      value: "2027",
+      value: "2028",
       unit: "Q4 Target",
       desc: "Orbiton-1 Demo Flight.",
       icon: CalendarClock,

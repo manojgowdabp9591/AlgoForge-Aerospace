@@ -230,14 +230,14 @@ export default function Home() {
                         align="left"
                     />
                     <RoadmapItem 
-                        year="2032" 
-                        title="Commercial Ops"
-                        desc="Routine satellite launch services enabled by reusable vehicles."
+                        year="2033" 
+                        title="Commercial Ops & Space Tourism"
+                        desc="Routine satellite launch services enabled by reusable vehicles with space tourism exploration."
                         status="pending"
                         align="right"
                     />
                     <RoadmapItem 
-                        year="2035" 
+                        year="2036" 
                         title="Point-to-Point Transport"
                         desc="Human-rated suborbital missions validating ultra-fast Earth travel."
                         status="pending"

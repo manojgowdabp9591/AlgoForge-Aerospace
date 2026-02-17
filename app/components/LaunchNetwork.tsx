@@ -25,7 +25,8 @@ export default function LaunchNetwork() {
               <span className="text-cyan-500">Grid.</span>
             </h2>
             <p className="text-white/60 text-lg md:text-xl mb-12 leading-relaxed max-w-lg font-light">
-              From equatorial orbits to polar insertions, <strong className="text-white">Vortex Aerospace</strong> operates from three strategic launch complexes. 
+              From equatorial orbits to polar insertions, <strong className="text-white">Vortex Aerospace</strong> is seeking to operate from three strategic 
+              launch complexes in future. 
               We ensure orbital access anywhere, anytime, with rapid-response capabilities.
             </p>
 
