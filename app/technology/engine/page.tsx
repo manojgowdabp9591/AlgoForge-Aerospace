@@ -33,7 +33,7 @@ export default function EnginePage() {
                 <h3 className="text-3xl font-bold text-white tracking-tighter mb-1">VORTEX-1</h3>
                 <div className="text-[10px] text-white/40 font-mono flex flex-col gap-1">
                     <span>RPM: <span className="text-cyan-400">24,000</span></span>
-                    <span>CHAMBER: <span className="text-cyan-400">95 BAR</span></span>
+                    <span>CHAMBER: <span className="text-cyan-400">300 BAR</span></span>
                     <span>TEMP: <span className="text-orange-400">3,400 K</span></span>
                 </div>
             </div>
