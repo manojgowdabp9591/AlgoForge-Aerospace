@@ -102,10 +102,10 @@ export default function EnginePage() {
              
              <div className="space-y-4 font-mono text-sm">
                 <SpecRow label="Cycle" value="Pressure-Gain Rotary Detonation" icon={Activity} />
-                <SpecRow label="Thrust (Sea Level)" value="850 kN" icon={Gauge} />
+                <SpecRow label="Thrust (Sea Level)" value="scaling upto 1400 kN" icon={Gauge} />
                 <SpecRow label="Specific Impulse (ISP)" value="345 sec" icon={Wind} />
                 <SpecRow label="Propellant" value="LCH4 / LOX" icon={Flame} />
-                <SpecRow label="Chamber Pressure" value="95 bar" icon={Gauge} />
+                <SpecRow label="Chamber Pressure" value="upto 300 bar" icon={Gauge} />
              </div>
           </div>
 
