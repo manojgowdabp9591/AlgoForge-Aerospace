@@ -190,7 +190,7 @@ export default function Footer() {
 
           <div className="flex gap-6">
             <SocialIcon href="#" icon={Twitter} />
-            <SocialIcon href="https://www.linkedin.com/company/vortex-aerospace/?viewAsMember=true" icon={Linkedin} />
+            <SocialIcon href="https://www.linkedin.com/company/vortex-aerospace/" icon={Linkedin} />
             <SocialIcon href="#" icon={Instagram} />
             <SocialIcon href="#" icon={Youtube} />
           </div>
