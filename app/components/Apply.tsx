@@ -50,7 +50,7 @@ export default function Apply({ role }: { role: string }) {
   };
 
   if (submitted) {
-    const refId = `VTX-${Math.floor(Math.random() * 100000)}-${new Date().getFullYear()}`;
+    const refId = `AFA-${Math.floor(Math.random() * 100000)}-${new Date().getFullYear()}`;
 
     return (
       <motion.div 
