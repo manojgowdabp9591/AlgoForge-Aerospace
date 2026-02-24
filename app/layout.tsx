@@ -41,7 +41,7 @@ export const viewport: Viewport = {
 };
 
 // Define the base URL dynamically or hardcode it for production stability
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://algoForge-aerospace.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://algo-forge-aerospace.vercel.app/";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
