@@ -41,7 +41,7 @@ export default function CareersPage() {
         <>
           Join the Mission at{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-cyan-500 to-blue-600">
-            Vortex Aerospace
+             AlgoForge Aerospace
           </span>
         </>
       }
@@ -149,7 +149,7 @@ export default function CareersPage() {
           <h3 className="text-3xl font-bold mb-16 text-center flex items-center justify-center gap-3">
             <Zap className="text-cyan-400 fill-cyan-400/20" />
             <span className="text-white">Why</span>
-            <span className="text-cyan-400">Vortex</span>
+            <span className="text-cyan-400">AlgoForge</span>
           </h3>
 
           <div className="grid md:grid-cols-3 gap-8">
