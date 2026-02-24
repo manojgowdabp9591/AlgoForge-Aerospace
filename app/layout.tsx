@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     siteName: "AlgoForge Aerospace",
     images: [
       {
-        url: "/social-preview.png",
+        url: "social-preview.png",
         width: 1200,
         height: 630,
         alt: "AlgoForge Aerospace Orbiton Vehicle",
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AlgoForge Aerospace",
     description: "Advancing Humanity through reusable hypersonic spaceflight.",
-    images: ["/social-preview.png"], 
+    images: ["social-preview.png"], 
     creator: "@AlgoForgeAero",
   },
   
