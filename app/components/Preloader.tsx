@@ -88,7 +88,7 @@ export default function Preloader() {
 
             {/* 2. Main Title */}
             <h1 className="text-4xl font-black tracking-[0.25em] text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-              VORTEX
+                AlgoForge Aerospace
             </h1>
             <div className="flex items-center gap-4 text-[10px] text-cyan-500/80 uppercase tracking-widest mb-12 font-bold">
                <span className="flex items-center gap-1"><ShieldCheck size={10} /> Sys.Ver 2.4.0</span>
