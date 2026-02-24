@@ -64,7 +64,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             <div className="relative z-10 flex justify-between items-center p-6 border-b border-white/10 bg-white/5">
               <div className="flex flex-col">
                 <span className="text-base font-bold tracking-wide text-white">
-                  Vortex Aerospace
+                   AlgoForge Aerospace
                 </span>
                 <span className="text-[10px] uppercase tracking-[0.2em] text-cyan-400 font-bold">
                   System Navigation
@@ -123,11 +123,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               <motion.div variants={itemVariants} className="mt-auto pt-6 border-t border-white/10">
                  <div className="flex gap-4 justify-center">
                     <SocialLink href="#" icon={Twitter} />
-                    <SocialLink href="#" icon={Linkedin} />
+                    <SocialLink href="https://www.linkedin.com/company/algoforge-aerospace/" icon={Linkedin} />
                     <SocialLink href="#" icon={Github} />
                  </div>
                  <p className="text-center text-[10px] text-white/20 mt-4 font-mono">
-                    © 2026 Vortex Aerospace Inc. <br /> All Systems Nominal.
+                    © 2026 AlgoForge Aerospace Inc. <br /> All Systems Nominal.
                  </p>
               </motion.div>
 

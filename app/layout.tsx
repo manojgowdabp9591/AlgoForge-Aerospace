@@ -41,33 +41,33 @@ export const viewport: Viewport = {
 };
 
 // Define the base URL dynamically or hardcode it for production stability
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://vortex-aerospace.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://algoForge-aerospace.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Vortex Aerospace | Defying Gravity",
-    template: "%s | Vortex Aerospace",
+    default: "AlgoForge Aerospace | Defying Gravity",
+    template: "%s | AlgoForge Aerospace",
   },
-  description: "Engineering the future of hypersonic travel. Vortex Aerospace builds reusable launch vehicles powered by proprietary Rotary Detonation Engines (RDE).",
-  keywords: ["Vortex", "Aerospace", "RDE", "Hypersonic", "Spaceflight", "Reusable Rockets", "Tech", "Propulsion", "Space Tourism"],
-  authors: [{ name: "Vortex Aerospace Engineering Team" }],
-  creator: "Vortex Aerospace",
+  description: "Engineering the future of hypersonic travel. AlgoForge Aerospace builds reusable launch vehicles powered by proprietary Rotary Detonation Engines (RDE).",
+  keywords: ["AlgoForge", "Aerospace", "RDE", "Hypersonic", "Spaceflight", "Reusable Rockets", "Tech", "Propulsion", "Space Tourism"],
+  authors: [{ name: "AlgoForge Aerospace Engineering Team" }],
+  creator: "AlgoForge Aerospace",
   
   // OPEN GRAPH (Facebook, LinkedIn, Discord, WhatsApp)
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    title: "Vortex Aerospace | The Speed of Tomorrow",
+    title: "AlgoForge Aerospace | The Speed of Tomorrow",
     description: "Building the infrastructure for the next century of human history with detonation-based propulsion.",
-    siteName: "Vortex Aerospace",
+    siteName: "AlgoForge Aerospace",
     images: [
       {
         url: "/social-preview.png",
         width: 1200,
         height: 630,
-        alt: "Vortex Aerospace Orbiton Vehicle",
+        alt: "AlgoForge Aerospace Orbiton Vehicle",
       },
     ],
   },
@@ -75,10 +75,10 @@ export const metadata: Metadata = {
   // TWITTER / X CARD
   twitter: {
     card: "summary_large_image",
-    title: "Vortex Aerospace",
+    title: "AlgoForge Aerospace",
     description: "Advancing Humanity through reusable hypersonic spaceflight.",
     images: ["/social-preview.png"], 
-    creator: "@VortexAero",
+    creator: "@AlgoForgeAero",
   },
   
   icons: {

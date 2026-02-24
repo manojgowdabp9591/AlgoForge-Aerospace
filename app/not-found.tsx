@@ -89,7 +89,7 @@ export default function NotFound() {
 
                 <p className="text-white/60 text-sm leading-relaxed font-light">
                     Telemetry data indicates you have drifted outside known navigational charts. 
-                    The coordinates requested do not correspond to any active sector in the Vortex Network.
+                    The coordinates requested do not correspond to any active sector in the AlgoForge Network.
                 </p>
 
                 <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center">

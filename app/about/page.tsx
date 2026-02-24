@@ -91,7 +91,7 @@ export default function AboutPage() {
               </p>
 
               <p>
-                I founded <strong className="text-white">Vortex Aerospace</strong> to shatter that ceiling. 
+                I founded <strong className="text-white">AlgoForge Aerospace</strong> to shatter that ceiling. 
                 By pursuing <span className="text-cyan-300">pressure-gain combustion</span> through rotary detonation engines, 
                 we are unlocking the ability to extract significantly more energy from every gram of propellant.
               </p>
@@ -217,7 +217,7 @@ export default function AboutPage() {
         >
             <div className="text-center mb-16">
                 <h3 className="text-3xl font-bold text-white mb-4">Core Directives</h3>
-                <p className="text-white/50 max-w-xl mx-auto">The fundamental truths that guide every engineering decision at Vortex.</p>
+                <p className="text-white/50 max-w-xl mx-auto">The fundamental truths that guide every engineering decision at AlgoForge.</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">

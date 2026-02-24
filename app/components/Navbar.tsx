@@ -52,15 +52,15 @@ export default function Navbar() {
             >
                 <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <img
-                src="/Vortex-Aerospace-logo.png"
-                alt="Vortex Aerospace Logo"
+                src="/AlgoForge-Aerospace-logo.png"
+                alt="AlgoForge Aerospace Logo"
                 className="h-10 w-auto relative z-10"
                 />
             </motion.div>
             
             <div className="flex flex-col leading-none">
               <span className="text-sm font-bold tracking-wide text-white group-hover:text-cyan-400 transition-colors">
-                Vortex Aerospace
+                AlgoForge Aerospace
               </span>
               <span className="text-[9px] text-white/40 uppercase tracking-[0.2em] group-hover:text-white/60 transition-colors">
                 Orbital Systems

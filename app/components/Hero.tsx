@@ -125,7 +125,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="mt-4 text-lg md:text-2xl font-light text-white/70 max-w-2xl mx-auto leading-relaxed"
         >
-          <span className="text-cyan-600 font-semibold"> Vortex Aerospace </span> is an
+          <span className="text-cyan-600 font-semibold">  AlgoForge Aerospace </span> is an
           engineering-led launch company developing reusable rocket systems for
           orbital satellite deployment. The same vehicle architecture supports
           human suborbital spaceflight and lays the foundation for ultra-fast

@@ -35,7 +35,7 @@ export default function Divisions() {
             <span className="text-white">Multi-Mission</span> <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Platform</span>
           </h1>
           <p className="text-white/60 text-lg max-w-2xl mx-auto leading-relaxed font-light">
-            Vortex Aerospace develops a unified family of reusable launch systems
+            AlgoForge Aerospace develops a unified family of reusable launch systems
             designed to support orbital missions today and advanced suborbital
             applications in the future.
           </p>

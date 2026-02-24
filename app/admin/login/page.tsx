@@ -129,7 +129,7 @@ export default function AdminLoginPage() {
                 </h1>
                 <div className="flex items-center justify-center gap-2 text-[10px] text-red-500/60 font-mono tracking-widest uppercase">
                     <Lock size={10} />
-                    Vortex Command Console
+                    AlgoForge Command Console
                 </div>
             </div>
 
@@ -143,7 +143,7 @@ export default function AdminLoginPage() {
                     <div className="relative">
                         <input
                             type="email"
-                            placeholder="officer@vortex.space"
+                            placeholder="officer@algoforge.space"
                             className="w-full bg-white/[0.03] border border-white/10 p-4 rounded-xl text-white focus:border-red-500/50 focus:bg-red-900/5 focus:ring-1 focus:ring-red-500/20 outline-none transition-all placeholder:text-white/10 font-mono text-sm tracking-wide pl-12"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}

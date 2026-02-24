@@ -75,7 +75,7 @@ export default function Home() {
                 
                 <div className="space-y-6 text-lg text-white/60 font-light leading-relaxed">
                     <p>
-                        <strong className="text-white">Vortex Aerospace</strong> is developing human-rated suborbital flight capability as a direct extension of its reusable orbital launch systems. 
+                        <strong className="text-white">AlgoForge Aerospace</strong> is developing human-rated suborbital flight capability as a direct extension of its reusable orbital launch systems. 
                         No parallel vehicles. No separate architectures.
                     </p>
                     <p>
@@ -138,7 +138,7 @@ export default function Home() {
                         Infrastructure for the next century.
                     </h3>
                     <p className="text-white/60 text-base leading-relaxed mb-8">
-                        <strong className="text-white">Vortex Aerospace</strong> is an engineering-led launch company focused on lowering the cost, complexity, and response time of orbital access. 
+                        <strong className="text-white">AlgoForge Aerospace</strong> is an engineering-led launch company focused on lowering the cost, complexity, and response time of orbital access. 
                         <br /><br />
                         Our reusable systems are designed to support frequent, reliable satellite deployment to low Earth orbit, laying the groundwork for a multi-planetary future.
                     </p>

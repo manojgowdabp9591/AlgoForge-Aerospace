@@ -34,7 +34,7 @@ export function PageWrapper({
         >
           {/* Breadcrumb / Kicker */}
           <div className="flex items-center gap-2 text-[10px] font-mono text-cyan-500 uppercase tracking-widest mb-6">
-            <span>Vortex Docs</span>
+            <span>AlgoForge Docs</span>
             <ChevronRight size={10} />
             <span>Reference</span>
           </div>

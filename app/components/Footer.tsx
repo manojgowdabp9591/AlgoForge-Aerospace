@@ -32,14 +32,14 @@ export default function Footer() {
               <div className="relative">
                 <div className="absolute inset-0 bg-cyan-500 blur-xl opacity-0 group-hover:opacity-40 transition-opacity duration-500" />
                 <img
-                  src="/Vortex-Aerospace-logo.png"
-                  alt="Vortex Aerospace Logo"
+                  src="/AlgoForge-Aerospace-logo.png"
+                  alt="AlgoForge Aerospace Logo"
                   className="h-10 w-auto relative z-10"
                 />
               </div>
               <div className="flex flex-col leading-none">
                 <span className="text-base font-bold tracking-wide text-white group-hover:text-cyan-400 transition-colors">
-                  Vortex Aerospace
+                  AlgoForge Aerospace
                 </span>
                 <span className="text-[10px] text-white/40 uppercase tracking-[0.2em]">
                   Orbital Systems
@@ -180,7 +180,7 @@ export default function Footer() {
         <div className="pt-8 border-t border-white/10 flex flex-col-reverse md:flex-row justify-between items-center gap-6">
           <div className="flex flex-col md:flex-row items-center gap-4">
             <p className="text-[10px] text-white/30 uppercase tracking-widest font-mono text-center md:text-left">
-              © 2026 Vortex Aerospace Inc.
+              © 2026  AlgoForge Aerospace Inc.
             </p>
             <span className="hidden md:block text-white/10">|</span>
             <p className="text-[10px] text-white/30 uppercase tracking-widest font-mono">
@@ -190,7 +190,7 @@ export default function Footer() {
 
           <div className="flex gap-6">
             <SocialIcon href="#" icon={Twitter} />
-            <SocialIcon href="https://www.linkedin.com/company/vortex-aerospace/" icon={Linkedin} />
+            <SocialIcon href="https://www.linkedin.com/company/algoforge-aerospace/" icon={Linkedin} />
             <SocialIcon href="#" icon={Instagram} />
             <SocialIcon href="#" icon={Youtube} />
           </div>

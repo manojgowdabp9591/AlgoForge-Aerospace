@@ -15,7 +15,7 @@ export default function OrbitonPage() {
   return (
     <PageLayout
       title="Vehicle: ORBITON-1"
-      subtitle="The flagship reusable micro-launcher from Vortex Aerospace."
+      subtitle="The flagship reusable micro-launcher from AlgoForge Aerospace."
     >
       <div className="grid lg:grid-cols-12 gap-8 mt-10 items-start">
         
@@ -142,7 +142,7 @@ export default function OrbitonPage() {
                ORBITON-1
             </h2>
             <p className="text-white/60 text-lg leading-relaxed font-light">
-              Developed by <span className="text-white font-medium">Vortex Aerospace</span>, the Orbiton-1 is a SmallSat Launch Vehicle (SSLV) engineered for the next era of spaceflight. 
+              Developed by <span className="text-white font-medium">AlgoForge Aerospace</span>, the Orbiton-1 is a SmallSat Launch Vehicle (SSLV) engineered for the next era of spaceflight. 
               By utilizing our proprietary <strong>Lifting Body</strong> architecture and <strong>VORTEX-1</strong> detonation engines, 
               we achieve rapid reusability without the mass penalty of traditional landing burns.
             </p>

@@ -4,8 +4,8 @@ import { cookies } from "next/headers";
 import { signAdminToken } from "@/app/lib/auth";
 import { NextResponse } from "next/server";
 
-const ADMIN_EMAIL = "admin@vortexspace.com";
-const ADMIN_PASSWORD = "VSpace2026!";
+const ADMIN_EMAIL = "admin@algoforge.com";
+const ADMIN_PASSWORD = "ASpace2026!";
 
 export async function POST(req: Request) {
   try {
