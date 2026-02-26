@@ -9,7 +9,7 @@ export default function AboutPage() {
     <PageLayout
       title={
         <>
-          About <span className="text-white">VSpace</span>
+          About <span className="text-cyan-400">Future Makers</span>
         </>
       }
       subtitle="Advancing propulsion physics. Democratizing orbit. Building the infrastructure of the next century."

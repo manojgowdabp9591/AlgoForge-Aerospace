@@ -41,7 +41,7 @@ export default function CareersPage() {
         <>
           Join the Mission at{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-cyan-500 to-blue-600">
-             AlgoForge Aerospace
+             AFA
           </span>
         </>
       }
