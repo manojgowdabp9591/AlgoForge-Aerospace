@@ -15,7 +15,7 @@ export default function Metrics() {
     },
     {
       label: "Payload Mass",
-      value: "850",
+      value: "850 / 16,500",
       unit: "Kilograms",
       desc: "SSO & LEO Constellation Class.",
       icon: Weight,
