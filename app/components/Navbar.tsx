@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import MobileMenu from "./MobileMenu";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
@@ -52,9 +52,9 @@ export default function Navbar() {
             >
                 <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <img
-                  src="/AlgoForge-Aerospace-logo.png"
-                  alt="AlgoForge Aerospace Logo"
-                  className="h-10 w-auto relative z-10"
+                src="/AlgoForge-Aerospace-logo.png"
+                alt="AlgoForge Aerospace Logo"
+                className="h-10 w-auto relative z-10"
                 />
             </motion.div>
             
@@ -89,7 +89,7 @@ export default function Navbar() {
 
           {/* MOBILE MENU BUTTON */}
           <button
-            className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition active:scale-95 relative z-50"
+            className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition active:scale-95"
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
           >
@@ -98,10 +98,8 @@ export default function Navbar() {
         </div>
       </motion.header>
 
-      {/* MOBILE MENU WRAPPER: Forced to absolute top priority */}
-      <div className="relative z-[9999]">
-        <MobileMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
-      </div>
+      {/* MOBILE MENU */}
+      <MobileMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
 }

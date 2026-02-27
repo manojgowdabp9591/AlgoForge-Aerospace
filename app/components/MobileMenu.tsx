@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Link from "next/link";
-import { X, ChevronRight, Github, Twitter, Linkedin, ExternalLink } from "lucide-react";
+import { X, ChevronRight, Github, Twitter, Linkedin, ExternalLink, Youtube, Instagram } from "lucide-react";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -122,9 +122,10 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               {/* SOCIALS */}
               <motion.div variants={itemVariants} className="mt-auto pt-6 border-t border-white/10">
                  <div className="flex gap-4 justify-center">
-                    <SocialLink href="#" icon={Twitter} />
+                    <SocialLink href="https://x.com/AlgoForgeAero" icon={Twitter} />
                     <SocialLink href="https://www.linkedin.com/company/algoforge-aerospace/" icon={Linkedin} />
-                    <SocialLink href="#" icon={Github} />
+                    <SocialLink href="https://www.instagram.com/algoforgeaerospace/" icon={Instagram} />
+                    <SocialLink href="https://www.youtube.com/@AlgoForgeAerospace" icon={Youtube} />
                  </div>
                  <p className="text-center text-[10px] text-white/20 mt-4 font-mono">
                     © 2026 AlgoForge Aerospace Inc. <br /> All Systems Nominal.
