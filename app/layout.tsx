@@ -3,7 +3,6 @@ import { Space_Grotesk, Inter, Orbitron, Rajdhani } from "next/font/google";
 import "./globals.css";
 
 // 1. COMPONENTS
-import Preloader from "./components/Preloader";
 import Footer from "./components/Footer";
 
 // 2. FONTS
@@ -38,6 +37,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+
 };
 
 // Define the base URL dynamically or hardcode it for production stability
@@ -120,7 +120,6 @@ export default function RootLayout({
           overflow-x-hidden
         `}
       >
-        <Preloader />
         <div className="relative z-10 flex flex-col min-h-screen">
            {children}
            <Footer />

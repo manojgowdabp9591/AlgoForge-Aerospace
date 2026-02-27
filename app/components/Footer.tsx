@@ -138,14 +138,14 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
+                  <Link href="/media-kit" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
                     Media Kit
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
+                  <Link href="/launch-schedule" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
                     Launch Schedule
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -157,19 +157,19 @@ export default function Footer() {
               </h3>
               <ul className="space-y-4 text-sm text-white/50 font-medium">
                 <li>
-                  <a href="#" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
+                  <Link href="/privacy-policy" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
+                  <Link href="/terms-of-service" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
                     Terms of Service
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block flex items-center gap-2">
+                  <Link href="/export-control" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block flex items-center gap-2">
                     <ShieldCheck size={14} /> Export Control
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
