@@ -19,7 +19,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="relative z-10 bg-black border-t border-white/10 pt-24 pb-12 overflow-hidden">
+    <footer className="relative z-0 bg-black border-t border-white/10 pt-24 pb-12 overflow-hidden">
       {/* Background Grid & Glow */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-50" />
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-cyan-900/10 blur-[100px] rounded-full pointer-events-none" />
@@ -114,7 +114,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/news" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
+                  <Link href="/newsroom" className="hover:text-cyan-400 hover:translate-x-1 transition-all inline-block">
                     Newsroom
                   </Link>
                 </li>
