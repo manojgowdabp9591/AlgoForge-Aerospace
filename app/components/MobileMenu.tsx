@@ -99,8 +99,8 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 <MobileLink href="/careers" onClick={onClose} variants={itemVariants}>
                   Careers
                 </MobileLink>
-                <MobileLink href="/about" onClick={onClose} variants={itemVariants}>
-                  Company
+                <MobileLink href="#/about" onClick={onClose} variants={itemVariants}>
+                  About Us
                 </MobileLink>
               </nav>
 

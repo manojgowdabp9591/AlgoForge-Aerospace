@@ -74,7 +74,7 @@ export default function Navbar() {
             <NavLink href="/technology/engine">Technology</NavLink>
             <NavLink href="/investors">Investors</NavLink>
             <NavLink href="/careers">Careers</NavLink>
-            <NavLink href="#/about">About</NavLink>
+            <NavLink href="#/about">About Us</NavLink>
             
             <div className="w-[1px] h-6 bg-white/10 mx-2" />
             
