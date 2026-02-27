@@ -143,7 +143,7 @@ export default function Home() {
                         Our reusable systems are designed to support frequent, reliable satellite deployment to low Earth orbit, laying the groundwork for a multi-planetary future.
                     </p>
                     
-                    <Link href="/about" className="group flex items-center gap-4 text-sm font-bold uppercase tracking-widest text-white">
+                    <Link href="#/about" className="group flex items-center gap-4 text-sm font-bold uppercase tracking-widest text-white">
                         <span className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
                             <ArrowRight size={16} />
                         </span>
