@@ -126,7 +126,7 @@ function InteractiveGlobe() {
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
         backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
         backgroundColor="rgba(0,0,0,0)"
-        atmosphereColor="#06b6d4" // Cyan atmosphere
+        atmosphereColor="#06b6d4"
         atmosphereAltitude={0.2}
 
         // Camera Control
