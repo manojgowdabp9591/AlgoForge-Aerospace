@@ -189,10 +189,10 @@ export default function Footer() {
           </div>
 
           <div className="flex gap-6">
-            <SocialIcon href="#" icon={Twitter} />
+            <SocialIcon href="https://x.com/AlgoForgeAero" icon={Twitter} />
             <SocialIcon href="https://www.linkedin.com/company/algoforge-aerospace/" icon={Linkedin} />
-            <SocialIcon href="#" icon={Instagram} />
-            <SocialIcon href="#" icon={Youtube} />
+            <SocialIcon href="https://www.instagram.com/algoforgeaerospace/" icon={Instagram} />
+            <SocialIcon href="https://www.youtube.com/@AlgoForgeAerospace" icon={Youtube} />
           </div>
         </div>
       </div>
