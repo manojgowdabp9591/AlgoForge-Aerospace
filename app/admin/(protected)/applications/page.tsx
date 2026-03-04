@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AdminLayout from "../layout"; 
+import AdminLayout from "../../(protected)/layout"; 
 import { 
   RefreshCw, Search, Trash2, Mail, FileText, Lock, 
   Inbox, WifiOff, Activity, User, Calendar, Shield, 
