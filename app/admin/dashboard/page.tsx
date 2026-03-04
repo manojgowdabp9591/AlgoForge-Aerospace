@@ -1,291 +1,324 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AdminLayout from "../layout"; 
-import { 
-  RefreshCw, Search, Trash2, Mail, FileText, Lock, 
-  Inbox, WifiOff, Activity, User, Calendar, Shield, 
-  Terminal, AlertCircle, Clock, ChevronRight 
-} from "lucide-react"; 
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import {
+  Activity, Shield, Rocket, Users,
+  ChevronRight, Terminal, Target,
+  Lock, AlertTriangle, Cpu, Radio,
+} from "lucide-react";
 
-// Enhanced Data Shape
-type Application = {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  message: string;
-  createdAt: string;
-  status?: "pending" | "reviewed" | "rejected"; // Added for UI simulation
-};
-
-export default function AdminPage() {
-  const router = useRouter();
-  const [apps, setApps] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [errorMsg, setErrorMsg] = useState(""); 
-  
-  // Fake "Status" assignment for visual variety since DB might not have it yet
-  const assignRandomStatus = (data: any[]) => {
-    return data.map(app => ({
-      ...app,
-      status: ["pending", "pending", "reviewed"].sort(() => 0.5 - Math.random())[0]
-    }));
-  };
-
-  async function fetchApplications() {
-    setLoading(true);
-    setErrorMsg(""); 
-
-    try {
-      // Simulate network delay for the "scanning" effect
-      await new Promise(r => setTimeout(r, 800));
-
-      const res = await fetch("/api/admin/applications", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (res.status === 401) throw new Error("UNAUTHORIZED_ACCESS");
-      if (!res.ok) throw new Error(`SERVER_FAULT_${res.status}`);
-
-      const data = await res.json();
-      setApps(assignRandomStatus(data));
-    } catch (err: any) {
-      console.error("Fetch Error:", err);
-      setErrorMsg(err.message || "DATA_LINK_FAILURE");
-      if(err.message === "UNAUTHORIZED_ACCESS") setTimeout(() => router.push("/admin/login"), 2000);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // Optimistic Delete Handler
-  const handleDelete = async (id: string) => {
-    if(!confirm("CONFIRM DELETION: This action cannot be undone.")) return;
-    
-    // 1. Optimistic UI update (remove immediately)
-    setApps(prev => prev.filter(app => app._id !== id));
-
-    // 2. Background API Call (Mocked here, replace with real endpoint)
-    try {
-        // await fetch(`/api/admin/applications/${id}`, { method: 'DELETE' });
-        console.log(`Deleted dossier ${id}`);
-    } catch (error) {
-        alert("Deletion failed via uplink.");
-        fetchApplications(); // Revert on fail
-    }
-  };
-
+// ── TYPING ANIMATION HOOK ─────────────────────
+function useTypingEffect(text: string, speed = 40) {
+  const [displayed, setDisplayed] = useState("");
   useEffect(() => {
-    fetchApplications();
-  }, []);
-
-  const filteredApps = apps.filter(app => 
-    (app.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) || 
-    (app.role?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-  );
-
-  return (
-    <AdminLayout>
-      <div className="relative min-h-screen p-6 md:p-10 max-w-7xl mx-auto overflow-hidden">
-        
-        {/* Background Atmosphere */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-900/10 rounded-full blur-[120px] pointer-events-none" />
-
-        <div className="relative z-10 space-y-10">
-            
-            {/* --- HEADER HUD --- */}
-            <motion.div 
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-cyan-500/20 pb-6"
-            >
-              <div>
-                <h1 className="text-4xl font-black text-white mb-2 flex items-center gap-4 tracking-tighter">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-cyan-500 blur-lg opacity-50" />
-                    <Activity className="relative z-10 text-cyan-400" size={32} />
-                  </div>
-                  VORTEX <span className="text-cyan-500">COMMAND</span>
-                </h1>
-                <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-cyan-500/60 uppercase">
-                  <span className="flex items-center gap-2"><Shield size={10} /> SECURE_UPLINK_ESTABLISHED</span>
-                  <span className="w-1 h-1 bg-cyan-500 rounded-full animate-pulse" />
-                  <span>v2.4.0-ADMIN</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                 <div className="hidden md:flex flex-col items-end mr-4">
-                    <span className="text-[10px] text-white/30 uppercase tracking-widest">System Load</span>
-                    <div className="w-32 h-1 bg-white/10 rounded-full mt-1 overflow-hidden">
-                        <motion.div 
-                            initial={{ width: 0 }} 
-                            animate={{ width: "45%" }} 
-                            className="h-full bg-cyan-500" 
-                        />
-                    </div>
-                 </div>
-                 
-                 <button 
-                   onClick={fetchApplications}
-                   className="group relative p-3 rounded-xl border border-cyan-500/30 bg-cyan-950/20 hover:bg-cyan-500/20 transition-all overflow-hidden"
-                 >
-                   <div className="absolute inset-0 bg-cyan-400/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                   <RefreshCw size={20} className={`text-cyan-400 relative z-10 transition-all duration-700 ${loading ? "animate-spin" : "group-hover:rotate-180"}`} />
-                 </button>
-              </div>
-            </motion.div>
-
-            {/* --- ERROR TERMINAL --- */}
-            <AnimatePresence>
-                {errorMsg && (
-                <motion.div 
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                >
-                    <div className="bg-red-950/30 border border-red-500/50 p-6 rounded-2xl flex items-start gap-4 backdrop-blur-md">
-                        <AlertCircle className="text-red-500 shrink-0 animate-pulse" size={24} />
-                        <div className="flex-1">
-                            <h3 className="text-red-400 font-bold tracking-widest uppercase mb-1">Connection Failure</h3>
-                            <p className="text-red-400/60 font-mono text-xs">{errorMsg}</p>
-                        </div>
-                        <button onClick={() => router.push("/admin/login")} className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-bold rounded uppercase tracking-wider transition">
-                            Re-Authenticate
-                        </button>
-                    </div>
-                </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* --- SEARCH BAR --- */}
-            {!errorMsg && (
-                <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
-                    <div className="relative flex items-center gap-4 bg-[#0a0a0f] p-4 rounded-xl border border-white/10">
-                        <Terminal className="text-cyan-500/50" size={20} />
-                        <input 
-                            type="text"
-                            placeholder="QUERY_DATABASE: Enter Personnel Name or Role ID..."
-                            className="bg-transparent border-none focus:ring-0 text-white w-full placeholder:text-white/20 font-mono text-sm tracking-wide outline-none h-full"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <div className="text-[10px] font-mono text-white/20 border border-white/10 px-2 py-1 rounded">
-                            {filteredApps.length} RECORDS FOUND
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* --- DATA GRID --- */}
-            {loading ? (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className="h-48 bg-white/5 rounded-2xl animate-pulse border border-white/5" />
-                    ))}
-                </div>
-            ) : filteredApps.length === 0 && !errorMsg ? (
-                <div className="flex flex-col items-center justify-center py-24 border border-dashed border-white/10 rounded-3xl bg-white/[0.01]">
-                    <Inbox size={48} className="text-white/20 mb-4" />
-                    <p className="text-white/40 font-mono text-sm uppercase tracking-widest">No Data Packets Found</p>
-                </div>
-            ) : (
-                <motion.div 
-                    layout 
-                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"
-                >
-                    <AnimatePresence>
-                    {filteredApps.map((app, i) => (
-                        <DossierCard key={app._id} data={app} index={i} onDelete={() => handleDelete(app._id)} />
-                    ))}
-                    </AnimatePresence>
-                </motion.div>
-            )}
-
-        </div>
-      </div>
-    </AdminLayout>
-  );
+    setDisplayed("");
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayed(text.slice(0, i + 1));
+      i++;
+      if (i >= text.length) clearInterval(interval);
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text]);
+  return displayed;
 }
 
-// --- SUB-COMPONENT: DOSSIER CARD ---
+// ── MISSION CARD DATA ─────────────────────────
+const PORTALS = [
+  {
+    href: "/admin/mission",
+    label: "Mission Control",
+    sublabel: "Director Dashboard",
+    description:
+      "Full access to live telemetry, launch sequencing, ARM / FIRE / ABORT controls, stage progression, and real-time event broadcasting to public viewers.",
+    icon: Rocket,
+    accent: "red",
+    tag: "CLASSIFIED",
+    stats: [
+      { label: "Status", value: "STANDBY" },
+      { label: "System", value: "ONLINE" },
+      { label: "Access", value: "DIRECTOR" },
+    ],
+    border: "hover:border-red-500/50",
+    glow: "hover:shadow-[0_0_50px_rgba(220,38,38,0.15)]",
+    tagColor: "bg-red-500/10 text-red-400 border-red-500/20",
+    iconBg: "bg-red-500/5 text-red-400 ring-red-500/20",
+    iconGlow: "shadow-[0_0_20px_rgba(220,38,38,0.2)]",
+    accentBar: "from-transparent via-red-600 to-transparent",
+    chevronColor: "text-red-500/40",
+    statColor: "text-red-400",
+    cornerColor: "border-red-500",
+  },
+  {
+    href: "/admin/applications",
+    label: "Applications",
+    sublabel: "Careers Command",
+    description:
+      "Review, search, and manage all personnel applications submitted via the careers portal. Contact applicants directly and maintain your talent pipeline.",
+    icon: Users,
+    accent: "cyan",
+    tag: "PERSONNEL",
+    stats: [
+      { label: "Module", value: "CAREERS" },
+      { label: "Access", value: "ADMIN" },
+      { label: "Link", value: "ACTIVE" },
+    ],
+    border: "hover:border-cyan-500/50",
+    glow: "hover:shadow-[0_0_50px_rgba(6,182,212,0.15)]",
+    tagColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+    iconBg: "bg-cyan-500/5 text-cyan-400 ring-cyan-500/20",
+    iconGlow: "shadow-[0_0_20px_rgba(6,182,212,0.2)]",
+    accentBar: "from-transparent via-cyan-500 to-transparent",
+    chevronColor: "text-cyan-500/40",
+    statColor: "text-cyan-400",
+    cornerColor: "border-cyan-500",
+  },
+];
 
-function DossierCard({ data, index, onDelete }: { data: Application, index: number, onDelete: () => void }) {
-    return (
+// ── MAIN COMPONENT ────────────────────────────
+export default function AdminHub() {
+  const router = useRouter();
+  const typed = useTypingEffect("COMMAND_CONSOLE://INITIALIZE...", 45);
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    // Auth guard
+    const auth = sessionStorage.getItem("admin_auth");
+    if (!auth) router.replace("/admin/login");
+
+    // Live clock
+    const tick = () =>
+      setTime(new Date().toLocaleTimeString("en-GB", { hour12: false }));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="relative min-h-screen p-6 md:p-10 max-w-6xl mx-auto overflow-hidden">
+
+      {/* ── BACKGROUND (matches applications page exactly) ── */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(220,38,38,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(220,38,38,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-900/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-900/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="relative z-10 space-y-10">
+
+        {/* ── HEADER HUD ── */}
         <motion.div
-            layout
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-            className="group relative bg-[#0d0d12] border border-white/10 hover:border-cyan-500/50 p-6 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(6,182,212,0.15)] flex flex-col"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-red-900/30 pb-6"
         >
-            {/* Card Header */}
-            <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-xl ${data.status === 'reviewed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-cyan-500/10 text-cyan-400'}`}>
-                        <User size={20} />
-                    </div>
-                    <div>
-                        <h3 className="text-white font-bold text-lg tracking-tight group-hover:text-cyan-400 transition-colors">
-                            {data.name}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[10px] font-mono text-white/40 uppercase bg-white/5 px-1.5 rounded">
-                                {data.role}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                
-                {/* Time Ago (Mock logic) */}
-                <div className="flex items-center gap-1.5 text-[10px] font-mono text-white/30 bg-black px-2 py-1 rounded border border-white/10">
-                    <Clock size={10} />
-                    <span>
-                        {new Date(data.createdAt).toLocaleDateString()}
-                    </span>
-                </div>
+          <div>
+            <h1 className="text-4xl font-black text-white mb-2 flex items-center gap-4 tracking-tighter">
+              <div className="relative">
+                <div className="absolute inset-0 bg-red-500 blur-lg opacity-40" />
+                <Activity className="relative z-10 text-red-400" size={32} />
+              </div>
+              ALGOFORGE{" "}
+              <span className="text-red-500">COMMAND</span>
+            </h1>
+
+            {/* Typing effect subtitle */}
+            <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-red-500/50 uppercase">
+              <span className="flex items-center gap-2">
+                <Shield size={10} />
+                {typed}
+                <span className="w-[6px] h-[10px] bg-red-500/60 animate-pulse inline-block" />
+              </span>
+            </div>
+          </div>
+
+          {/* Live clock + system status */}
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex flex-col items-end gap-1">
+              <span className="text-[9px] text-white/20 uppercase tracking-widest font-mono">
+                LOCAL TIME
+              </span>
+              <span className="text-sm font-mono font-bold text-white/60 tabular-nums">
+                {time}
+              </span>
             </div>
 
-            {/* Message Body */}
-            <div className="relative mb-6 flex-grow bg-white/[0.02] p-4 rounded-xl border border-white/5 group-hover:border-white/10 transition-colors">
-                <div className="absolute top-0 left-0 w-1 h-full bg-white/10 group-hover:bg-cyan-500/50 transition-colors rounded-l-xl" />
-                <p className="text-sm text-white/70 font-light leading-relaxed line-clamp-3 italic">
-                    "{data.message}"
-                </p>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-[9px] text-white/20 uppercase tracking-widest font-mono">
+                Auth Level
+              </span>
+              <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-red-400">
+                <Lock size={10} />
+                DIRECTOR
+              </div>
             </div>
 
-            {/* Footer / Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
-                <a 
-                    href={`mailto:${data.email}`}
-                    className="flex items-center gap-2 text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-cyan-500 hover:border-cyan-400 border border-transparent px-4 py-2 rounded-lg transition-all"
-                >
-                    <Mail size={14} /> 
-                    <span className="uppercase tracking-wider">Contact</span>
-                </a>
-
-                <button 
-                    onClick={onDelete}
-                    className="p-2 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-all"
-                    title="Delete Record"
-                >
-                    <Trash2 size={18} />
-                </button>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-[10px] font-mono text-red-500/60 uppercase tracking-widest">
+                SECURE
+              </span>
             </div>
-
-            {/* Decorative Corner */}
-            <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="w-2 h-2 border-t border-r border-cyan-500" />
-            </div>
+          </div>
         </motion.div>
-    )
+
+        {/* ── SYSTEM STATUS BAR ── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="flex flex-wrap gap-3"
+        >
+          {[
+            { icon: Cpu, label: "GNC", value: "NOMINAL", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+            { icon: Radio, label: "UPLINK", value: "ACTIVE", color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/20" },
+            { icon: Target, label: "AFSS", value: "ARMED", color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20" },
+            { icon: AlertTriangle, label: "THREAT LVL", value: "NOMINAL", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+            { icon: Terminal, label: "SYS ID", value: "VTX-V9.2", color: "text-white/40", bg: "bg-white/5 border-white/10" },
+          ].map((s) => (
+            <div
+              key={s.label}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${s.bg} text-[10px] font-mono uppercase tracking-wider`}
+            >
+              <s.icon size={11} className={s.color} />
+              <span className="text-white/30">{s.label}:</span>
+              <span className={s.color}>{s.value}</span>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* ── SECTION LABEL ── */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em]"
+        >
+          /// SELECT_OPERATIONAL_MODULE
+        </motion.p>
+
+        {/* ── PORTAL CARDS ── */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {PORTALS.map((portal, i) => (
+            <motion.div
+              key={portal.href}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 + i * 0.1 }}
+            >
+              <Link href={portal.href} className="block group">
+                <div
+                  className={`relative bg-[#0d0d12] border border-white/10 ${portal.border} ${portal.glow}
+                    p-8 rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer`}
+                >
+                  {/* Top accent line */}
+                  <div
+                    className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${portal.accentBar} opacity-0 group-hover:opacity-60 transition-opacity duration-500`}
+                  />
+
+                  {/* Corner decoration */}
+                  <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className={`w-3 h-3 border-t-2 border-r-2 ${portal.cornerColor}`} />
+                  </div>
+                  <div className="absolute bottom-0 left-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className={`w-3 h-3 border-b-2 border-l-2 ${portal.cornerColor}`} />
+                  </div>
+
+                  {/* Header row */}
+                  <div className="flex items-start justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`p-4 rounded-xl ring-1 ${portal.iconBg} ${portal.iconGlow} 
+                          transition-all duration-300 group-hover:scale-110`}
+                      >
+                        <portal.icon size={28} strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-black text-white tracking-tight uppercase">
+                          {portal.label}
+                        </h2>
+                        <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-0.5">
+                          {portal.sublabel}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span
+                      className={`text-[9px] font-bold font-mono uppercase tracking-widest 
+                        px-2.5 py-1 rounded-lg border ${portal.tagColor}`}
+                    >
+                      {portal.tag}
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-sm text-white/40 font-light leading-relaxed mb-8 line-clamp-3">
+                    {portal.description}
+                  </p>
+
+                  {/* Stats row */}
+                  <div className="grid grid-cols-3 gap-3 mb-8">
+                    {portal.stats.map((stat) => (
+                      <div
+                        key={stat.label}
+                        className="bg-white/[0.02] border border-white/5 rounded-xl p-3"
+                      >
+                        <div className="text-[9px] text-white/20 uppercase tracking-widest font-mono mb-1">
+                          {stat.label}
+                        </div>
+                        <div className={`text-[11px] font-bold font-mono ${portal.statColor}`}>
+                          {stat.value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CTA row */}
+                  <div
+                    className={`flex items-center justify-between pt-5 border-t border-white/[0.06]`}
+                  >
+                    <span
+                      className={`text-xs font-bold font-mono uppercase tracking-widest ${portal.statColor} 
+                        opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0`}
+                    >
+                      ENTER MODULE
+                    </span>
+                    <div
+                      className={`flex items-center gap-1 ${portal.chevronColor} 
+                        group-hover:gap-3 transition-all duration-300`}
+                    >
+                      <ChevronRight size={16} />
+                      <ChevronRight
+                        size={16}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* ── BOTTOM SYSTEM FOOTER ── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="flex flex-col md:flex-row items-center justify-between pt-6 border-t border-white/[0.05] gap-4"
+        >
+          <p className="text-[9px] text-white/20 uppercase tracking-widest font-mono">
+            System ID: VTX-SECURE-V9.2 // Encrypted 256-bit // AlgoForge Aerospace
+          </p>
+          <div className="flex gap-2">
+            <div className="w-1.5 h-1.5 bg-red-500/30 rounded-full animate-pulse" />
+            <div className="w-1.5 h-1.5 bg-red-500/30 rounded-full animate-pulse delay-75" />
+            <div className="w-1.5 h-1.5 bg-red-500/30 rounded-full animate-pulse delay-150" />
+          </div>
+        </motion.div>
+
+      </div>
+    </div>
+  );
 }
