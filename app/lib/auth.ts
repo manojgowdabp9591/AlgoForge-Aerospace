@@ -1,15 +1,19 @@
-import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
+import { jwtVerify } from "jose";
 
-const JWT_SECRET = process.env.JWT_SECRET || "RGVCy4P6XB3W346bNuoqDhZgdmmpTTQRyZDc3tLlzucd";
+export async function getAdminSession() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
-export function signAdminToken(payload: object) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "1d" });
-}
+  if (!token) return null;
 
-export function verifyAdminToken(token: string) {
   try {
-    return jwt.verify(token, JWT_SECRET);
-  } catch (error) {
-    throw new Error("Invalid token");
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || "RGVCy4P6XB3W346bNuoqDhZgdmmpTTQRyZDc3tLlzucd");
+    const { payload } = await jwtVerify(token, secret);
+    
+    // Returns { username: "director", role: "FLIGHT_DIRECTOR", ... }
+    return payload; 
+  } catch (err) {
+    return null;
   }
 }

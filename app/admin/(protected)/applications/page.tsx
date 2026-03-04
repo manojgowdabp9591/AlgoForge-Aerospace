@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AdminLayout from "../../(protected)/layout"; 
+
 import { 
-  RefreshCw, Search, Trash2, Mail, FileText, Lock, 
-  Inbox, WifiOff, Activity, User, Calendar, Shield, 
-  Terminal, AlertCircle, Clock, ChevronRight 
+  RefreshCw, Search, Trash2, Mail, Lock, 
+  Inbox, WifiOff, Activity, User, Users, Shield, 
+  Terminal, AlertCircle, Clock, CheckCircle2 
 } from "lucide-react"; 
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -89,15 +89,17 @@ export default function AdminPage() {
     (app.role?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   );
 
+  const pendingCount = apps.filter(a => a.status === 'pending').length;
+  const reviewedCount = apps.filter(a => a.status === 'reviewed').length;
+
   return (
-    <AdminLayout>
-      <div className="relative min-h-screen p-6 md:p-10 max-w-7xl mx-auto overflow-hidden">
+      <div className="relative min-h-screen p-6 md:p-10 max-w-7xl mx-auto overflow-hidden bg-[#030305]">
         
         {/* Background Atmosphere */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-900/10 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="relative z-10 space-y-10">
+        <div className="relative z-10 space-y-6">
             
             {/* --- HEADER HUD --- */}
             <motion.div 
@@ -116,7 +118,7 @@ export default function AdminPage() {
                 <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-cyan-500/60 uppercase">
                   <span className="flex items-center gap-2"><Shield size={10} /> SECURE_UPLINK_ESTABLISHED</span>
                   <span className="w-1 h-1 bg-cyan-500 rounded-full animate-pulse" />
-                  <span>v2.4.0-ADMIN</span>
+                  <span>v2.4.0-HR-ADMIN</span>
                 </div>
               </div>
 
@@ -135,12 +137,52 @@ export default function AdminPage() {
                  <button 
                    onClick={fetchApplications}
                    className="group relative p-3 rounded-xl border border-cyan-500/30 bg-cyan-950/20 hover:bg-cyan-500/20 transition-all overflow-hidden"
+                   title="Refresh Data"
                  >
                    <div className="absolute inset-0 bg-cyan-400/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                    <RefreshCw size={20} className={`text-cyan-400 relative z-10 transition-all duration-700 ${loading ? "animate-spin" : "group-hover:rotate-180"}`} />
                  </button>
               </div>
             </motion.div>
+
+            {/* --- METRICS DASHBOARD (NEW) --- */}
+            {!errorMsg && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4"
+              >
+                <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-1">Total Requests</p>
+                    <p className="text-3xl font-mono font-black text-white">{loading ? "-" : apps.length}</p>
+                  </div>
+                  <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                    <Users size={24} className="text-white/40" />
+                  </div>
+                </div>
+
+                <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] text-cyan-500/60 uppercase tracking-widest font-bold mb-1">Pending Review</p>
+                    <p className="text-3xl font-mono font-black text-cyan-400">{loading ? "-" : pendingCount}</p>
+                  </div>
+                  <div className="p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20">
+                    <Clock size={24} className="text-cyan-400" />
+                  </div>
+                </div>
+
+                <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] text-emerald-500/60 uppercase tracking-widest font-bold mb-1">Cleared</p>
+                    <p className="text-3xl font-mono font-black text-emerald-400">{loading ? "-" : reviewedCount}</p>
+                  </div>
+                  <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                    <CheckCircle2 size={24} className="text-emerald-400" />
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             {/* --- ERROR TERMINAL --- */}
             <AnimatePresence>
@@ -166,7 +208,7 @@ export default function AdminPage() {
             </AnimatePresence>
 
             {/* --- SEARCH BAR --- */}
-            {!errorMsg && (
+            {!errorMsg && apps.length > 0 && (
                 <div className="relative group">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
                     <div className="relative flex items-center gap-4 bg-[#0a0a0f] p-4 rounded-xl border border-white/10">
@@ -178,8 +220,8 @@ export default function AdminPage() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <div className="text-[10px] font-mono text-white/20 border border-white/10 px-2 py-1 rounded">
-                            {filteredApps.length} RECORDS FOUND
+                        <div className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1.5 rounded-lg font-bold">
+                            {filteredApps.length} FOUND
                         </div>
                     </div>
                 </div>
@@ -192,10 +234,29 @@ export default function AdminPage() {
                         <div key={i} className="h-48 bg-white/5 rounded-2xl animate-pulse border border-white/5" />
                     ))}
                 </div>
+            ) : apps.length === 0 && !errorMsg ? (
+                // ZERO APPLICATIONS IN DATABASE
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center justify-center py-32 border border-dashed border-white/10 rounded-3xl bg-[#050508]/50 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]"
+                >
+                    <div className="relative mb-6">
+                      <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full" />
+                      <Inbox size={64} className="text-cyan-500/40 relative z-10" />
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-black text-white tracking-widest mb-2 text-center drop-shadow-md">
+                      NO APPLICATION REQUESTS
+                    </h2>
+                    <p className="text-cyan-500/60 font-mono text-xs uppercase tracking-widest text-center">
+                      The personnel recruitment queue is currently empty.
+                    </p>
+                </motion.div>
             ) : filteredApps.length === 0 && !errorMsg ? (
+                // APPLICATIONS EXIST, BUT SEARCH YIELDED NO RESULTS
                 <div className="flex flex-col items-center justify-center py-24 border border-dashed border-white/10 rounded-3xl bg-white/[0.01]">
-                    <Inbox size={48} className="text-white/20 mb-4" />
-                    <p className="text-white/40 font-mono text-sm uppercase tracking-widest">No Data Packets Found</p>
+                    <Search size={48} className="text-white/20 mb-4" />
+                    <p className="text-white/40 font-mono text-sm uppercase tracking-widest">No matching records found for "{searchTerm}"</p>
                 </div>
             ) : (
                 <motion.div 
@@ -212,7 +273,6 @@ export default function AdminPage() {
 
         </div>
       </div>
-    </AdminLayout>
   );
 }
 
@@ -226,12 +286,12 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
-            className="group relative bg-[#0d0d12] border border-white/10 hover:border-cyan-500/50 p-6 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(6,182,212,0.15)] flex flex-col"
+            className="group relative bg-[#0a0a0f]/90 backdrop-blur-sm border border-white/10 hover:border-cyan-500/50 p-6 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(6,182,212,0.15)] flex flex-col"
         >
             {/* Card Header */}
             <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-xl ${data.status === 'reviewed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-cyan-500/10 text-cyan-400'}`}>
+                    <div className={`p-3 rounded-xl border ${data.status === 'reviewed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'}`}>
                         <User size={20} />
                     </div>
                     <div>
@@ -239,7 +299,7 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
                             {data.name}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[10px] font-mono text-white/40 uppercase bg-white/5 px-1.5 rounded">
+                            <span className="text-[9px] font-bold font-mono text-white/50 uppercase bg-white/5 px-2 py-0.5 rounded border border-white/10 tracking-widest">
                                 {data.role}
                             </span>
                         </div>
@@ -247,8 +307,8 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
                 </div>
                 
                 {/* Time Ago (Mock logic) */}
-                <div className="flex items-center gap-1.5 text-[10px] font-mono text-white/30 bg-black px-2 py-1 rounded border border-white/10">
-                    <Clock size={10} />
+                <div className="flex items-center gap-1.5 text-[9px] font-bold font-mono text-white/40 bg-black px-2 py-1 rounded-lg border border-white/10 tracking-widest">
+                    <Clock size={10} className="text-cyan-500" />
                     <span>
                         {new Date(data.createdAt).toLocaleDateString()}
                     </span>
@@ -267,15 +327,15 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
             <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
                 <a 
                     href={`mailto:${data.email}`}
-                    className="flex items-center gap-2 text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-cyan-500 hover:border-cyan-400 border border-transparent px-4 py-2 rounded-lg transition-all"
+                    className="flex items-center gap-2 text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-cyan-500 hover:border-cyan-400 border border-transparent px-4 py-2.5 rounded-xl transition-all"
                 >
                     <Mail size={14} /> 
-                    <span className="uppercase tracking-wider">Contact</span>
+                    <span className="uppercase tracking-wider">Contact Agent</span>
                 </a>
 
                 <button 
                     onClick={onDelete}
-                    className="p-2 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                    className="p-2.5 rounded-xl border border-transparent text-white/20 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all"
                     title="Delete Record"
                 >
                     <Trash2 size={18} />
@@ -283,8 +343,8 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
             </div>
 
             {/* Decorative Corner */}
-            <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="w-2 h-2 border-t border-r border-cyan-500" />
+            <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-3 h-3 border-t-2 border-r-2 border-cyan-500" />
             </div>
         </motion.div>
     )
