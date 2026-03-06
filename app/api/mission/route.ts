@@ -10,6 +10,7 @@ const DEFAULT_STATE = {
   maxVel: 0,
   armed: false,
   countdown: 60,
+  pendingCommand: "",
   telemetry: {
     altitude: 0,
     velocity: 0,
@@ -23,9 +24,10 @@ const DEFAULT_STATE = {
     motor_temp: 22,
     battery: 100,
     signal: -45,
+    presence: false,
   },
   events: [
-    { time: new Date().toISOString(), msg: "VORTEX COMMAND: Link Established", type: "info" }
+    { time: new Date().toISOString(), msg: "AFA COMMAND: Link Established", type: "info" }
   ]
 };
 
@@ -47,7 +49,7 @@ export async function GET() {
 }
 
 // ======================================================================
-// POST: Update the live status (Used by Director Dashboard)
+// POST: Update the live status (Used by Director Dashboard & ESP32)
 // ======================================================================
 export async function POST(req: Request) {
   try {
@@ -57,10 +59,17 @@ export async function POST(req: Request) {
     // --- 1. HANDLE SYSTEM RESET ---
     if (body.reset) {
       globalAny.missionState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      // Tell the hardware to reset too
+      globalAny.missionState.pendingCommand = "RESET"; 
       return NextResponse.json({ success: true, message: "MISSION_RESET" });
     }
 
-    // --- 2. HANDLE NEW EVENTS/LOGS ---
+    // --- 2. HANDLE HARDWARE COMMANDS (From Web Dashboard) ---
+    if (body.command !== undefined) {
+      state.pendingCommand = body.command;
+    }
+
+    // --- 3. HANDLE NEW EVENTS/LOGS ---
     if (body.event) {
       state.events.unshift({
         time: new Date().toISOString(),
@@ -71,7 +80,7 @@ export async function POST(req: Request) {
       if (state.events.length > 50) state.events.pop();
     }
 
-    // --- 3. HANDLE TOP-LEVEL UPDATES (Status, Armed, Countdown, Time) ---
+    // --- 4. HANDLE TOP-LEVEL UPDATES (Status, Armed, Countdown, Time) ---
     if (body.status !== undefined) state.status = body.status;
     if (body.armed !== undefined) state.armed = body.armed;
     if (body.countdown !== undefined) {
@@ -80,7 +89,7 @@ export async function POST(req: Request) {
     }
     if (body.missionTime !== undefined) state.missionTime = body.missionTime;
 
-    // --- 4. HANDLE TELEMETRY UPDATES ---
+    // --- 5. HANDLE TELEMETRY UPDATES (From ESP32) ---
     if (body.telemetry) {
       state.telemetry = { ...state.telemetry, ...body.telemetry };
       
@@ -93,7 +102,25 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json({ success: true, state });
+    // --- 6. HARDWARE RESPONSE DISPATCH ---
+    const commandToSend = state.pendingCommand;
+    
+    // If the ESP32 is polling us (sending telemetry), we clear the command 
+    // immediately after grabbing it so we don't accidentally send it twice!
+    if (body.telemetry) {
+        state.pendingCommand = "";
+    }
+
+    // The ESP32 parses this exact JSON structure to know what to do
+    return NextResponse.json({ 
+      success: true, 
+      command: commandToSend,
+      state: {
+         status: state.status,
+         armed: state.armed,
+         countdown: state.countdown
+      }
+    });
 
   } catch (error) {
     console.error("API Error [POST /api/mission]:", error);
