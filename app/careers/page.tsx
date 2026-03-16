@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import PageLayout from "../components/PageLayout"; // Adjust path if needed
 import { motion, AnimatePresence } from "framer-motion";
@@ -42,6 +42,20 @@ const tabVariants = {
 export default function CareersPage() {
   const [activeTab, setActiveTab] = useState<"careers" | "internships">("careers");
 
+  // Load the saved tab state from sessionStorage when the page loads
+  useEffect(() => {
+    const savedTab = sessionStorage.getItem("algoforge_careers_tab");
+    if (savedTab === "careers" || savedTab === "internships") {
+      setActiveTab(savedTab);
+    }
+  }, []);
+
+  // Update the state and save the choice to sessionStorage
+  const handleTabSwitch = (tab: "careers" | "internships") => {
+    setActiveTab(tab);
+    sessionStorage.setItem("algoforge_careers_tab", tab);
+  };
+
   return (
     <PageLayout
       title={
@@ -74,7 +88,7 @@ export default function CareersPage() {
         <motion.div variants={itemVariants} className="flex justify-center mb-16">
           <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl relative">
             <button
-              onClick={() => setActiveTab("careers")}
+              onClick={() => handleTabSwitch("careers")}
               className={`px-8 py-3 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
                 activeTab === "careers" ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" : "text-white/50 hover:text-white hover:bg-white/5 border border-transparent"
               }`}
@@ -83,7 +97,7 @@ export default function CareersPage() {
               Full-Time Careers
             </button>
             <button
-              onClick={() => setActiveTab("internships")}
+              onClick={() => handleTabSwitch("internships")}
               className={`px-8 py-3 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
                 activeTab === "internships" ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" : "text-white/50 hover:text-white hover:bg-white/5 border border-transparent"
               }`}
