@@ -16,7 +16,7 @@ import {
   Zap,
   Paperclip
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Apply({ role }: { role: string }) {
   const [submitted, setSubmitted] = useState(false);
@@ -29,14 +29,33 @@ export default function Apply({ role }: { role: string }) {
 
     const formData = new FormData(e.currentTarget);
 
-    // Simulate API delay for effect
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Package the data for our MongoDB API
+    const payload = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      message: formData.get("message"),
+      role: role, // From the component props
+    };
 
     try {
-        // Mock success (Replace with your actual fetch)
+      // Execute the actual API call
+      const response = await fetch("/api/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Trigger your awesome success UI
         setSubmitted(true);
-    } catch {
-       alert("Network error. Please check your connection and retry.");
+      } else {
+        throw new Error(result.error || "Server rejected the application.");
+      }
+    } catch (error: any) {
+      console.error("Transmission Error:", error);
+      alert(error.message || "Network error. Please check your connection and retry.");
     }
 
     setLoading(false);
@@ -231,7 +250,7 @@ export default function Apply({ role }: { role: string }) {
               {loading ? (
                 <>
                   <Loader2 className="animate-spin" size={16} />
-                  Initiating Upload...
+                  Transmitting...
                 </>
               ) : (
                 <>
