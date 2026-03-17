@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { 
   RefreshCw, Search, Trash2, Mail, Lock, 
   Inbox, WifiOff, Activity, User, Users, Shield, 
-  Terminal, AlertCircle, Clock, CheckCircle2, FileDown 
+  Terminal, AlertCircle, Clock, CheckCircle2, FileDown,
+  Briefcase, GraduationCap // Added for badging
 } from "lucide-react"; 
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,6 +30,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [errorMsg, setErrorMsg] = useState(""); 
+  
+  // NEW: Filter State for Role Types
+  const [filterType, setFilterType] = useState<"all" | "full-time" | "internships">("all");
   
   // Fake "Status" assignment for visual variety since DB might not have it yet
   const assignRandomStatus = (data: any[]) => {
@@ -88,10 +92,20 @@ export default function AdminPage() {
     fetchApplications();
   }, []);
 
-  const filteredApps = apps.filter(app => 
-    (app.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) || 
-    (app.role?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-  );
+  // NEW: Advanced Filtering Logic (Search + Role Type)
+  const filteredApps = apps.filter(app => {
+    const matchesSearch = (app.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) || 
+                          (app.role?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+    
+    const isIntern = (app.role?.toLowerCase() || "").includes("intern");
+    
+    const matchesType = 
+        filterType === "all" || 
+        (filterType === "internships" && isIntern) || 
+        (filterType === "full-time" && !isIntern);
+
+    return matchesSearch && matchesType;
+  });
 
   const pendingCount = apps.filter(a => a.status === 'pending').length;
   const reviewedCount = apps.filter(a => a.status === 'reviewed').length;
@@ -211,22 +225,47 @@ export default function AdminPage() {
                 )}
             </AnimatePresence>
 
-            {/* --- SEARCH BAR --- */}
+            {/* --- NEW: ADVANCED SEARCH & FILTER BAR --- */}
             {!errorMsg && apps.length > 0 && (
-                <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
-                    <div className="relative flex items-center gap-4 bg-[#0a0a0f] p-4 rounded-xl border border-white/10">
-                        <Terminal className="text-cyan-500/50" size={20} />
-                        <input 
-                            type="text"
-                            placeholder="QUERY_DATABASE: Enter Personnel Name or Role ID..."
-                            className="bg-transparent border-none focus:ring-0 text-white w-full placeholder:text-white/20 font-mono text-sm tracking-wide outline-none h-full"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <div className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1.5 rounded-lg font-bold">
-                            {filteredApps.length} FOUND
+                <div className="flex flex-col lg:flex-row gap-4">
+                    {/* Search Input */}
+                    <div className="relative group flex-grow">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
+                        <div className="relative flex items-center gap-4 bg-[#0a0a0f] p-4 rounded-xl border border-white/10">
+                            <Terminal className="text-cyan-500/50" size={20} />
+                            <input 
+                                type="text"
+                                placeholder="QUERY_DATABASE: Enter Personnel Name or Role ID..."
+                                className="bg-transparent border-none focus:ring-0 text-white w-full placeholder:text-white/20 font-mono text-sm tracking-wide outline-none h-full"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <div className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1.5 rounded-lg font-bold">
+                                {filteredApps.length} FOUND
+                            </div>
                         </div>
+                    </div>
+
+                    {/* Quick Filters */}
+                    <div className="flex bg-[#0a0a0f] p-1.5 rounded-xl border border-white/10 shrink-0">
+                        <button 
+                            onClick={() => setFilterType("all")} 
+                            className={`px-4 py-2.5 rounded-lg text-xs font-bold tracking-widest uppercase transition-all ${filterType === 'all' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/80'}`}
+                        >
+                            All
+                        </button>
+                        <button 
+                            onClick={() => setFilterType("full-time")} 
+                            className={`px-4 py-2.5 rounded-lg text-xs font-bold tracking-widest uppercase flex items-center gap-2 transition-all ${filterType === 'full-time' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'text-white/40 hover:text-white/80 border border-transparent'}`}
+                        >
+                            <Briefcase size={14} /> Full-Time
+                        </button>
+                        <button 
+                            onClick={() => setFilterType("internships")} 
+                            className={`px-4 py-2.5 rounded-lg text-xs font-bold tracking-widest uppercase flex items-center gap-2 transition-all ${filterType === 'internships' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-white/40 hover:text-white/80 border border-transparent'}`}
+                        >
+                            <GraduationCap size={14} /> Interns
+                        </button>
                     </div>
                 </div>
             )}
@@ -283,6 +322,9 @@ export default function AdminPage() {
 // --- SUB-COMPONENT: DOSSIER CARD ---
 
 function DossierCard({ data, index, onDelete }: { data: Application, index: number, onDelete: () => void }) {
+    // NEW: Check if role contains "Intern" (case-insensitive)
+    const isIntern = (data.role?.toLowerCase() || "").includes("intern");
+
     return (
         <motion.div
             layout
@@ -302,7 +344,18 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
                         <h3 className="text-white font-bold text-lg tracking-tight group-hover:text-cyan-400 transition-colors">
                             {data.name}
                         </h3>
-                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                            {/* NEW: Role Type Badge */}
+                            {isIntern ? (
+                                <span className="flex items-center gap-1 text-[9px] font-bold font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20 tracking-widest uppercase">
+                                    <GraduationCap size={10} /> Internship
+                                </span>
+                            ) : (
+                                <span className="flex items-center gap-1 text-[9px] font-bold font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 tracking-widest uppercase">
+                                    <Briefcase size={10} /> Full-Time
+                                </span>
+                            )}
+                            
                             <span className="text-[9px] font-bold font-mono text-white/50 uppercase bg-white/5 px-2 py-0.5 rounded border border-white/10 tracking-widest">
                                 {data.role}
                             </span>
@@ -340,7 +393,7 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
                         <span className="hidden sm:inline uppercase tracking-wider">Contact</span>
                     </a>
 
-                    {/* NEW: Download CV Button (Only shows if CV exists) */}
+                    {/* Download CV Button */}
                     {data.resumeBase64 && (
                         <a 
                             href={data.resumeBase64}
