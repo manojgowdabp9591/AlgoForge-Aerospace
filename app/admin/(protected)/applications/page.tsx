@@ -5,20 +5,22 @@ import { useEffect, useState } from "react";
 import { 
   RefreshCw, Search, Trash2, Mail, Lock, 
   Inbox, WifiOff, Activity, User, Users, Shield, 
-  Terminal, AlertCircle, Clock, CheckCircle2 
+  Terminal, AlertCircle, Clock, CheckCircle2, FileDown 
 } from "lucide-react"; 
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Enhanced Data Shape
+// Enhanced Data Shape with Resume Support
 type Application = {
   _id: string;
   name: string;
   email: string;
   role: string;
   message: string;
+  resumeName?: string;
+  resumeBase64?: string;
   createdAt: string;
-  status?: "pending" | "reviewed" | "rejected"; // Added for UI simulation
+  status?: "pending" | "reviewed" | "rejected";
 };
 
 export default function AdminPage() {
@@ -44,9 +46,11 @@ export default function AdminPage() {
       // Simulate network delay for the "scanning" effect
       await new Promise(r => setTimeout(r, 800));
 
+      // CRITICAL FIX: cache: "no-store" forces Next.js to bypass the cache and fetch live data
       const res = await fetch("/api/admin/applications", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
+        cache: "no-store", 
       });
 
       if (res.status === 401) throw new Error("UNAUTHORIZED_ACCESS");
@@ -145,7 +149,7 @@ export default function AdminPage() {
               </div>
             </motion.div>
 
-            {/* --- METRICS DASHBOARD (NEW) --- */}
+            {/* --- METRICS DASHBOARD --- */}
             {!errorMsg && (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
@@ -298,7 +302,7 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
                         <h3 className="text-white font-bold text-lg tracking-tight group-hover:text-cyan-400 transition-colors">
                             {data.name}
                         </h3>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
                             <span className="text-[9px] font-bold font-mono text-white/50 uppercase bg-white/5 px-2 py-0.5 rounded border border-white/10 tracking-widest">
                                 {data.role}
                             </span>
@@ -306,7 +310,7 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
                     </div>
                 </div>
                 
-                {/* Time Ago (Mock logic) */}
+                {/* Time Ago */}
                 <div className="flex items-center gap-1.5 text-[9px] font-bold font-mono text-white/40 bg-black px-2 py-1 rounded-lg border border-white/10 tracking-widest">
                     <Clock size={10} className="text-cyan-500" />
                     <span>
@@ -325,17 +329,34 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
 
             {/* Footer / Actions */}
             <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
-                <a 
-                    href={`mailto:${data.email}`}
-                    className="flex items-center gap-2 text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-cyan-500 hover:border-cyan-400 border border-transparent px-4 py-2.5 rounded-xl transition-all"
-                >
-                    <Mail size={14} /> 
-                    <span className="uppercase tracking-wider">Contact Agent</span>
-                </a>
+                
+                <div className="flex items-center gap-2">
+                    <a 
+                        href={`mailto:${data.email}`}
+                        className="flex items-center gap-2 text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-cyan-500 hover:border-cyan-400 border border-transparent px-4 py-2.5 rounded-xl transition-all"
+                        title="Contact Agent"
+                    >
+                        <Mail size={14} /> 
+                        <span className="hidden sm:inline uppercase tracking-wider">Contact</span>
+                    </a>
+
+                    {/* NEW: Download CV Button (Only shows if CV exists) */}
+                    {data.resumeBase64 && (
+                        <a 
+                            href={data.resumeBase64}
+                            download={data.resumeName || `${data.name.replace(/\s+/g, '_')}_CV.pdf`}
+                            className="flex items-center gap-2 text-xs font-bold text-cyan-400 hover:text-black bg-cyan-500/10 hover:bg-cyan-400 border border-cyan-500/30 px-4 py-2.5 rounded-xl transition-all"
+                            title={`Download ${data.resumeName || 'CV'}`}
+                        >
+                            <FileDown size={14} /> 
+                            <span className="hidden sm:inline uppercase tracking-wider">CV</span>
+                        </a>
+                    )}
+                </div>
 
                 <button 
                     onClick={onDelete}
-                    className="p-2.5 rounded-xl border border-transparent text-white/20 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all"
+                    className="p-2.5 rounded-xl border border-transparent text-white/20 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all ml-auto"
                     title="Delete Record"
                 >
                     <Trash2 size={18} />

@@ -21,7 +21,9 @@ export async function POST(req: Request) {
       name: data.name,    
       email: data.email,  
       role: data.role,     
-      message: data.message 
+      message: data.message,
+      resumeName: data.resumeName,
+      resumeBase64: data.resumeBase64
     });
     console.log("-> Write Successful. Document ID:", newApp._id);
 

@@ -28,17 +28,37 @@ export default function Apply({ role }: { role: string }) {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    const file = formData.get("resume") as File;
+    let base64String = "";
 
-    // Package the data for our MongoDB API
+    // 1. Convert the PDF to a Base64 text string
+    if (file && file.size > 0) {
+      // Safety check: Keep files under 2MB so we don't crash the free database
+      if (file.size > 2 * 1024 * 1024) {
+        alert("File too large. Please upload a PDF under 2MB.");
+        setLoading(false);
+        return;
+      }
+
+      const reader = new FileReader();
+      const readFile = new Promise((resolve) => {
+        reader.onload = (e) => resolve(e.target?.result);
+        reader.readAsDataURL(file);
+      });
+      base64String = (await readFile) as string;
+    }
+
+    // 2. Package the payload with the new file data
     const payload = {
       name: formData.get("name"),
       email: formData.get("email"),
       message: formData.get("message"),
-      role: role, // From the component props
+      role: role,
+      resumeName: file ? file.name : "",
+      resumeBase64: base64String, // The converted PDF data!
     };
 
     try {
-      // Execute the actual API call
       const response = await fetch("/api/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -48,7 +68,6 @@ export default function Apply({ role }: { role: string }) {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        // Trigger your awesome success UI
         setSubmitted(true);
       } else {
         throw new Error(result.error || "Server rejected the application.");
