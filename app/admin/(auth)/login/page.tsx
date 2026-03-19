@@ -203,6 +203,7 @@ export default function AdminLogin() {
 
               {/* Password Input */}
               <motion.div variants={itemVariants} className="relative group/input">
+
                 {/* Active Focus Indicator Line */}
                 <div className="absolute left-0 top-2 bottom-2 w-[2px] bg-cyan-500 rounded-r-full scale-y-0 group-focus-within/input:scale-y-100 transition-transform duration-300 origin-center z-20" />
                 
@@ -221,7 +222,7 @@ export default function AdminLogin() {
                     <button 
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-white/30 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-200 z-10 focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-black/30 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-200 z-10 focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
                         title={showPassword ? "Hide Password" : "Show Password"}
                     >
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
