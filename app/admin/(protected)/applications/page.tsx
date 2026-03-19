@@ -131,7 +131,7 @@ export default function AdminPage() {
                     <div className="absolute inset-0 bg-cyan-500 blur-lg opacity-50" />
                     <Activity className="relative z-10 text-cyan-400" size={32} />
                   </div>
-                  VORTEX <span className="text-cyan-500">COMMAND</span>
+                  ALGOFORGE <span className="text-cyan-500">RECRUIT CENTER</span>
                 </h1>
                 <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-cyan-500/60 uppercase">
                   <span className="flex items-center gap-2"><Shield size={10} /> SECURE_UPLINK_ESTABLISHED</span>
@@ -390,7 +390,7 @@ function DossierCard({ data, index, onDelete }: { data: Application, index: numb
                         title="Contact Agent"
                     >
                         <Mail size={14} /> 
-                        <span className="hidden sm:inline uppercase tracking-wider">Contact</span>
+                        <span className="hidden sm:inline uppercase tracking-wider">Mail</span>
                     </a>
 
                     {/* Download CV Button */}
