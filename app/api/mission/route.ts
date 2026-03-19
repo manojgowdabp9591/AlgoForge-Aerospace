@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 
 // 1. Connect to your existing MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://Admin:AlgoAero2026@algoforgeaerospacefligh.7xtcewt.mongodb.net/?appName=AlgoForgeAerospaceFlight";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://Admin:AlgoAero2026@algoforgeaerospace.ohycryh.mongodb.net/?appName=AlgoForgeAerospace";
 
 if (!mongoose.connection.readyState) {
   mongoose.connect(MONGODB_URI);
