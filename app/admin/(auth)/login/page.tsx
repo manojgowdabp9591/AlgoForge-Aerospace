@@ -222,7 +222,7 @@ export default function AdminLogin() {
                     <button 
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-black/30 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-200 z-10 focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-black hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-200 z-10 focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
                         title={showPassword ? "Hide Password" : "Show Password"}
                     >
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
