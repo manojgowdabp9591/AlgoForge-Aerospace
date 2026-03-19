@@ -10,7 +10,7 @@ if (!mongoose.connection.readyState) {
 
 // 2. Define the Mission Schema
 const MissionSchema = new mongoose.Schema({
-  id: { type: String, default: "VORTEX_1" },
+  id: { type: String, default: "ORBITON_1" },
   status: { type: String, default: "STANDBY" },
   armed: { type: Boolean, default: false },
   telemetry: {
@@ -30,9 +30,9 @@ const Mission = mongoose.models.Mission || mongoose.model("Mission", MissionSche
 // GET: Your UI dashboards poll this to see the live data
 export async function GET() {
   try {
-    let mission = await Mission.findOne({ id: "VORTEX_1" });
+    let mission = await Mission.findOne({ id: "ORBITON_1" });
     if (!mission) {
-      mission = await Mission.create({ id: "VORTEX_1" }); // Create default if missing
+      mission = await Mission.create({ id: "ORBITON_1" }); // Create default if missing
     }
     return NextResponse.json(mission);
   } catch (error) {
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     
     // Find the mission and update only the fields provided
     const mission = await Mission.findOneAndUpdate(
-      { id: "VORTEX_1" },
+      { id: "ORBITON_1" },
       { $set: updates },
       { new: true, upsert: true }
     );
