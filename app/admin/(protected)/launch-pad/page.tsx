@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Settings, Droplets, Zap, Wind, 
   Thermometer, AlertTriangle, CheckCircle2, 
-  Radio, Database, Shield, Lock
+  Radio, Database, Shield, Lock, WifiOff
 } from "lucide-react";
 
+// ADDED: serverAge and rx_status for watchdog timer
 const INITIAL_STATE = {
   status: "OFFLINE",
+  serverAge: 9999, 
+  rx_status: "OFFLINE",
   telemetry: { lox: 100, methane: 100 }
 };
 
@@ -47,6 +50,8 @@ export default function GroundControlPage() {
         setConnectionError(false);
       } catch (err) {
         setConnectionError(true);
+        // FORCE the UI into offline state if the internet connection drops
+        setState((prev: any) => ({ ...prev, serverAge: 9999 }));
       }
     };
 
@@ -91,6 +96,25 @@ export default function GroundControlPage() {
 
   const tel = state?.telemetry || INITIAL_STATE.telemetry;
 
+  // --- ADDED: THE WATCHDOG LOGIC ---
+  let linkStatusColor = "text-emerald-400";
+  let linkStatusText = "UPLINK NOMINAL";
+  let showWarningOverlay = false;
+
+  if (state.serverAge > 4000) {
+    linkStatusColor = "text-red-500 animate-pulse";
+    linkStatusText = "GROUND STATION OFFLINE";
+    showWarningOverlay = true;
+  } else if (state.rx_status === "LOS") {
+    linkStatusColor = "text-amber-500 animate-pulse";
+    linkStatusText = "VEHICLE SIGNAL LOST (LOS)";
+    showWarningOverlay = true;
+  } else if (connectionError) {
+    linkStatusColor = "text-red-500 animate-pulse";
+    linkStatusText = "UPLINK DEGRADED";
+    showWarningOverlay = true;
+  }
+
   return (
     <div className="relative min-h-screen p-4 md:p-8 max-w-[1600px] mx-auto overflow-hidden bg-[#030305]">
       
@@ -113,23 +137,42 @@ export default function GroundControlPage() {
               </div>
               GROUND <span className="text-emerald-500">CONTROL</span>
             </h1>
-            <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-emerald-500/60 uppercase">
+            <div className={`flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] uppercase ${linkStatusColor}`}>
               <span className="flex items-center gap-2">
-                <Lock size={10} /> Pad 39-A SECURED
+                <Lock size={10} className={showWarningOverlay ? "" : "text-emerald-500"} /> Pad 39-A SECURED
               </span>
             </div>
           </div>
           
           <div className="text-right flex flex-col items-end">
              <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono mb-1">Director Uplink</div>
-             <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0f] border rounded-lg font-mono text-xs ${connectionError ? 'border-red-500/30 text-red-400' : 'border-emerald-500/30 text-emerald-400'}`}>
+             <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0f] border rounded-lg font-mono text-xs ${showWarningOverlay ? 'border-red-500/30 text-red-400' : 'border-emerald-500/30 text-emerald-400'}`}>
                 <Database size={14} />
-                {connectionError ? "OFFLINE" : state.status || "STANDBY"}
+                {showWarningOverlay ? "SYNC DEGRADED" : state.status || "STANDBY"}
              </div>
           </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-6">
+        {/* ADDED: LARGE HARDWARE WARNING OVERLAY */}
+        <AnimatePresence>
+          {showWarningOverlay && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} 
+              className={`w-full p-4 rounded-2xl border flex items-center gap-4 ${state.serverAge > 4000 || connectionError ? 'bg-red-500/10 border-red-500/30 text-red-500' : 'bg-amber-500/10 border-amber-500/30 text-amber-500'}`}>
+              <AlertTriangle size={24} />
+              <div>
+                <div className="font-black tracking-widest uppercase">{linkStatusText}</div>
+                <div className="text-xs opacity-70 font-mono mt-1">
+                  {state.serverAge > 4000 || connectionError
+                    ? `Last Ground Station ping was ${(state.serverAge / 1000).toFixed(1)}s ago. Check Node 3 Power & Wi-Fi.` 
+                    : `Ground Station is online, but no telemetry is reaching it. Check Node 2 Power.`}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ADDED: Opacity shift when offline */}
+        <div className={`grid lg:grid-cols-12 gap-6 transition-opacity duration-500 ${showWarningOverlay ? 'opacity-50' : 'opacity-100'}`}>
 
           {/* --- LEFT: PROPELLANT LOADING --- */}
           <div className="lg:col-span-7 space-y-6">

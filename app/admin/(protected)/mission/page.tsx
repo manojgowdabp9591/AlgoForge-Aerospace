@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Target, Wind, Radio, Cpu, Rocket, Globe, Activity,
   AlertTriangle, ShieldAlert, Power, Thermometer,
-  Terminal
+  Terminal, WifiOff
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis,
@@ -29,6 +29,8 @@ const INITIAL_STATE = {
   maxAlt: 0,
   maxVel: 0,
   events: [],
+  serverAge: 9999, // Added: Watchdog timer default
+  rx_status: "OFFLINE", // Added: Rocket signal default
   telemetry: {
     altitude: 0, velocity: 0, accel: 1.0, pitch: 0, roll: 0, stage: 0,
     lox: 100, methane: 100, thrust: 0, motor_temp: 22, battery: 100, signal: -120
@@ -66,16 +68,21 @@ export default function MissionDirectorPage() {
         setMissionTime(safeData.missionTime || 0);
         setConnectionError(false);
 
-        tRef.current += 0.5;
-        setHistory(prev => [...prev.slice(-100), {
-          t: parseFloat(tRef.current.toFixed(1)),
-          altitude: safeData.telemetry.altitude,
-          velocity: safeData.telemetry.velocity,
-          thrust: safeData.telemetry.thrust,
-          accel: safeData.telemetry.accel,
-        }]);
+        // ADDED: Only draw charts if the data is fresh and the rocket is talking
+        if (safeData.serverAge < 4000 && safeData.rx_status === "OK") {
+          tRef.current += 0.5;
+          setHistory(prev => [...prev.slice(-100), {
+            t: parseFloat(tRef.current.toFixed(1)),
+            altitude: safeData.telemetry.altitude,
+            velocity: safeData.telemetry.velocity,
+            thrust: safeData.telemetry.thrust,
+            accel: safeData.telemetry.accel,
+          }]);
+        }
       } catch (err) {
         setConnectionError(true);
+        // Force the UI into a dead state if the internet drops
+        setState((prev: any) => ({ ...prev, serverAge: 9999 }));
       }
     };
 
@@ -115,6 +122,24 @@ export default function MissionDirectorPage() {
   const tel: Telemetry = state?.telemetry || INITIAL_STATE.telemetry;
   const currentStage = tel.stage || 0;
 
+  // --- ADDED: THE WATCHDOG LOGIC ---
+  let linkStatusColor = "text-cyan-500/60";
+  let linkStatusText = "BROADCASTING LIVE";
+  let showWarningOverlay = false;
+
+  if (state.serverAge > 4000) {
+    linkStatusColor = "text-red-500 animate-pulse";
+    linkStatusText = "GROUND STATION OFFLINE";
+    showWarningOverlay = true;
+  } else if (state.rx_status === "LOS") {
+    linkStatusColor = "text-amber-500 animate-pulse";
+    linkStatusText = "VEHICLE SIGNAL LOST (LOS)";
+    showWarningOverlay = true;
+  } else if (connectionError) {
+    linkStatusColor = "text-red-500 animate-pulse";
+    linkStatusText = "UPLINK DEGRADED";
+  }
+
   return (
     <div className="relative min-h-screen p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto overflow-hidden bg-[#030305]">
       
@@ -139,19 +164,19 @@ export default function MissionDirectorPage() {
               </div>
               MISSION <span className="text-cyan-500">DIRECTOR</span>
             </h1>
-            <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-cyan-500/60 uppercase">
+            <div className={`flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] uppercase ${linkStatusColor}`}>
               <span className="flex items-center gap-2">
-                <Radio size={10} className={connectionError ? "text-red-500" : "animate-pulse"} /> 
-                {connectionError ? "UPLINK DEGRADED" : "BROADCASTING LIVE"}
+                {showWarningOverlay ? <WifiOff size={10} /> : <Radio size={10} className={connectionError ? "" : "animate-pulse"} />} 
+                {linkStatusText}
               </span>
             </div>
           </div>
           
           <div className="text-right flex flex-col items-end">
              <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono mb-1">Global Data Uplink</div>
-             <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0f] border rounded-lg font-mono text-xs ${connectionError ? 'border-red-500/30 text-red-400' : 'border-cyan-500/30 text-cyan-400'}`}>
+             <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0f] border rounded-lg font-mono text-xs ${showWarningOverlay || connectionError ? 'border-red-500/30 text-red-400' : 'border-cyan-500/30 text-cyan-400'}`}>
                 <Globe size={14} />
-                {connectionError ? "SYNC FAILED" : `SYNCED: ${new Date().toLocaleTimeString()}`}
+                {showWarningOverlay || connectionError ? "SYNC DEGRADED" : `SYNCED: ${new Date().toLocaleTimeString()}`}
              </div>
           </div>
         </motion.div>
@@ -191,8 +216,8 @@ export default function MissionDirectorPage() {
           </div>
         </div>
 
-        {/* --- METRICS ROW --- */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {/* --- METRICS ROW --- Added opacity dimming if offline */}
+        <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 transition-opacity duration-500 ${showWarningOverlay ? 'opacity-30' : 'opacity-100'}`}>
           {[
             { label: "Altitude", value: tel.altitude.toFixed(1), unit: "m", color: "#22d3ee" },
             { label: "Velocity", value: tel.velocity.toFixed(1), unit: "m/s", color: "#3b82f6" },
@@ -323,6 +348,24 @@ export default function MissionDirectorPage() {
 
           {/* --- CENTER COLUMN: CHARTS / MAP / EVENTS / PHASE --- */}
           <div className="lg:col-span-6 space-y-4">
+
+            {/* ADDED: LARGE HARDWARE WARNING OVERLAY */}
+            <AnimatePresence>
+              {showWarningOverlay && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} 
+                  className={`w-full p-4 rounded-2xl border flex items-center gap-4 ${state.serverAge > 4000 ? 'bg-red-500/10 border-red-500/30 text-red-500' : 'bg-amber-500/10 border-amber-500/30 text-amber-500'}`}>
+                  <AlertTriangle size={24} />
+                  <div>
+                    <div className="font-black tracking-widest uppercase">{linkStatusText}</div>
+                    <div className="text-xs opacity-70 font-mono mt-1">
+                      {state.serverAge > 4000 
+                        ? `Last Ground Station ping was ${(state.serverAge / 1000).toFixed(1)}s ago. Check Node 3 Power & Wi-Fi.` 
+                        : `Ground Station is online, but no telemetry is reaching it. Check Node 2 Power.`}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Tabs */}
             <div className="flex gap-2 bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-xl p-1.5">
@@ -532,8 +575,8 @@ export default function MissionDirectorPage() {
             </AnimatePresence>
           </div>
 
-          {/* --- RIGHT COLUMN: ATTITUDE + SIGNAL --- */}
-          <div className="lg:col-span-3 space-y-4">
+          {/* --- RIGHT COLUMN: ATTITUDE + SIGNAL --- Added opacity dimming if offline */}
+          <div className={`lg:col-span-3 space-y-4 transition-opacity duration-500 ${showWarningOverlay ? 'opacity-30' : 'opacity-100'}`}>
 
             {/* Attitude Indicator */}
             <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-lg">
@@ -581,13 +624,13 @@ export default function MissionDirectorPage() {
                   <Radio size={12} className="text-cyan-500" /> Telemetry Link
                 </span>
                 <span className="text-xs text-cyan-400 font-mono font-bold bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">
-                    {tel.signal.toFixed(1)} dBm
+                    {showWarningOverlay ? "--" : tel.signal.toFixed(1)} dBm
                 </span>
               </div>
               
               <div className="flex items-end gap-1.5 h-12 bg-[#050508] p-3 rounded-xl border border-white/5">
                 {[...Array(16)].map((_, i) => {
-                  const active = i < Math.floor((tel.signal + 120) / 4);
+                  const active = !showWarningOverlay && i < Math.floor((tel.signal + 120) / 4);
                   return (
                     <div key={i} className="flex-1 rounded-sm transition-all duration-500"
                       style={{
