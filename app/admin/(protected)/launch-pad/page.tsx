@@ -1,18 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
   Settings, Droplets, Zap, Wind, 
   Thermometer, AlertTriangle, CheckCircle2, 
-  Radio, Database, Shield, Lock, WifiOff
+  Radio, Database, Shield, Lock
 } from "lucide-react";
 
-// ADDED: serverAge and rx_status for watchdog timer
 const INITIAL_STATE = {
   status: "OFFLINE",
-  serverAge: 9999, 
-  rx_status: "OFFLINE",
   telemetry: { lox: 100, methane: 100 }
 };
 
@@ -50,8 +47,6 @@ export default function GroundControlPage() {
         setConnectionError(false);
       } catch (err) {
         setConnectionError(true);
-        // FORCE the UI into offline state if the internet connection drops
-        setState((prev: any) => ({ ...prev, serverAge: 9999 }));
       }
     };
 
@@ -62,7 +57,7 @@ export default function GroundControlPage() {
 
   const updatePropellant = async (type: "lox" | "methane", value: number) => {
     const currentTel = state?.telemetry || INITIAL_STATE.telemetry;
-    const safeValue = Math.max(0, Math.min(100, value));
+    const safeValue = Math.max(0, Math.min(100, Number(value) || 0));
 
     // Optimistic UI Update
     setState((prev: any) => ({
@@ -96,25 +91,6 @@ export default function GroundControlPage() {
 
   const tel = state?.telemetry || INITIAL_STATE.telemetry;
 
-  // --- ADDED: THE WATCHDOG LOGIC ---
-  let linkStatusColor = "text-emerald-400";
-  let linkStatusText = "UPLINK NOMINAL";
-  let showWarningOverlay = false;
-
-  if (state.serverAge > 4000) {
-    linkStatusColor = "text-red-500 animate-pulse";
-    linkStatusText = "GROUND STATION OFFLINE";
-    showWarningOverlay = true;
-  } else if (state.rx_status === "LOS") {
-    linkStatusColor = "text-amber-500 animate-pulse";
-    linkStatusText = "VEHICLE SIGNAL LOST (LOS)";
-    showWarningOverlay = true;
-  } else if (connectionError) {
-    linkStatusColor = "text-red-500 animate-pulse";
-    linkStatusText = "UPLINK DEGRADED";
-    showWarningOverlay = true;
-  }
-
   return (
     <div className="relative min-h-screen p-4 md:p-8 max-w-[1600px] mx-auto overflow-hidden bg-[#030305]">
       
@@ -137,42 +113,23 @@ export default function GroundControlPage() {
               </div>
               GROUND <span className="text-emerald-500">CONTROL</span>
             </h1>
-            <div className={`flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] uppercase ${linkStatusColor}`}>
+            <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-emerald-500/60 uppercase">
               <span className="flex items-center gap-2">
-                <Lock size={10} className={showWarningOverlay ? "" : "text-emerald-500"} /> Pad 39-A SECURED
+                <Lock size={10} /> Pad 39-A SECURED
               </span>
             </div>
           </div>
           
           <div className="text-right flex flex-col items-end">
              <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono mb-1">Director Uplink</div>
-             <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0f] border rounded-lg font-mono text-xs ${showWarningOverlay ? 'border-red-500/30 text-red-400' : 'border-emerald-500/30 text-emerald-400'}`}>
+             <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0f] border rounded-lg font-mono text-xs ${connectionError ? 'border-red-500/30 text-red-400' : 'border-emerald-500/30 text-emerald-400'}`}>
                 <Database size={14} />
-                {showWarningOverlay ? "SYNC DEGRADED" : state.status || "STANDBY"}
+                {connectionError ? "OFFLINE" : state.status || "STANDBY"}
              </div>
           </div>
         </motion.div>
 
-        {/* ADDED: LARGE HARDWARE WARNING OVERLAY */}
-        <AnimatePresence>
-          {showWarningOverlay && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} 
-              className={`w-full p-4 rounded-2xl border flex items-center gap-4 ${state.serverAge > 4000 || connectionError ? 'bg-red-500/10 border-red-500/30 text-red-500' : 'bg-amber-500/10 border-amber-500/30 text-amber-500'}`}>
-              <AlertTriangle size={24} />
-              <div>
-                <div className="font-black tracking-widest uppercase">{linkStatusText}</div>
-                <div className="text-xs opacity-70 font-mono mt-1">
-                  {state.serverAge > 4000 || connectionError
-                    ? `Last Ground Station ping was ${(state.serverAge / 1000).toFixed(1)}s ago. Check Node 3 Power & Wi-Fi.` 
-                    : `Ground Station is online, but no telemetry is reaching it. Check Node 2 Power.`}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ADDED: Opacity shift when offline */}
-        <div className={`grid lg:grid-cols-12 gap-6 transition-opacity duration-500 ${showWarningOverlay ? 'opacity-50' : 'opacity-100'}`}>
+        <div className="grid lg:grid-cols-12 gap-6">
 
           {/* --- LEFT: PROPELLANT LOADING --- */}
           <div className="lg:col-span-7 space-y-6">
@@ -193,18 +150,18 @@ export default function GroundControlPage() {
                     <div className="h-6 bg-[#050508] rounded-full overflow-hidden border border-white/10 relative">
                       <motion.div 
                         className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-700 to-cyan-400"
-                        animate={{ width: `${tel.lox}%` }}
+                        animate={{ width: `${Number(tel.lox) || 0}%` }}
                         transition={{ duration: 0.5 }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold mix-blend-difference text-white">
-                        {tel.lox.toFixed(1)}%
+                        {(Number(tel.lox) || 0).toFixed(1)}%
                       </div>
                     </div>
                   </div>
 
                   <div className="md:col-span-3 flex gap-2">
-                    <button onClick={() => updatePropellant("lox", tel.lox - 10)} className="flex-1 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-mono text-xs transition-colors">-10</button>
-                    <button onClick={() => updatePropellant("lox", tel.lox + 10)} className="flex-1 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-blue-400 font-mono text-xs transition-colors">+10</button>
+                    <button onClick={() => updatePropellant("lox", (Number(tel.lox)||0) - 10)} className="flex-1 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-mono text-xs transition-colors">-10</button>
+                    <button onClick={() => updatePropellant("lox", (Number(tel.lox)||0) + 10)} className="flex-1 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-blue-400 font-mono text-xs transition-colors">+10</button>
                     <button onClick={() => updatePropellant("lox", 100)} className="px-3 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg text-emerald-400 font-mono text-xs transition-colors">FULL</button>
                   </div>
                 </div>
@@ -220,18 +177,18 @@ export default function GroundControlPage() {
                     <div className="h-6 bg-[#050508] rounded-full overflow-hidden border border-white/10 relative">
                       <motion.div 
                         className="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-700 to-pink-500"
-                        animate={{ width: `${tel.methane}%` }}
+                        animate={{ width: `${Number(tel.methane) || 0}%` }}
                         transition={{ duration: 0.5 }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold mix-blend-difference text-white">
-                        {tel.methane.toFixed(1)}%
+                        {(Number(tel.methane) || 0).toFixed(1)}%
                       </div>
                     </div>
                   </div>
 
                   <div className="md:col-span-3 flex gap-2">
-                    <button onClick={() => updatePropellant("methane", tel.methane - 10)} className="flex-1 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-mono text-xs transition-colors">-10</button>
-                    <button onClick={() => updatePropellant("methane", tel.methane + 10)} className="flex-1 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-purple-400 font-mono text-xs transition-colors">+10</button>
+                    <button onClick={() => updatePropellant("methane", (Number(tel.methane)||0) - 10)} className="flex-1 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-mono text-xs transition-colors">-10</button>
+                    <button onClick={() => updatePropellant("methane", (Number(tel.methane)||0) + 10)} className="flex-1 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-purple-400 font-mono text-xs transition-colors">+10</button>
                     <button onClick={() => updatePropellant("methane", 100)} className="px-3 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg text-emerald-400 font-mono text-xs transition-colors">FULL</button>
                   </div>
                 </div>
