@@ -8,11 +8,16 @@ import {
   Radio, Database, Shield, Lock
 } from "lucide-react";
 
+const INITIAL_STATE = {
+  status: "OFFLINE",
+  telemetry: { lox: 100, methane: 100 }
+};
+
 export default function GroundControlPage() {
-  const [state, setState] = useState<any>(null);
+  const [state, setState] = useState<any>(INITIAL_STATE);
   const [connectionError, setConnectionError] = useState(false);
   
-  // Local state for Ground-specific pad infrastructure (Mocked for UI)
+  // Local state for Ground-specific pad infrastructure
   const [padSystems, setPadSystems] = useState({
     strongback: "ERECT",
     deluge: "STANDBY",
@@ -20,14 +25,25 @@ export default function GroundControlPage() {
     range: "CLEAR"
   });
 
-  // Poll global API every 500ms to stay synced with Mission Control
+  // Poll global API every 500ms
   useEffect(() => {
     const fetchState = async () => {
       try {
         const res = await fetch("/api/mission");
         if (!res.ok) throw new Error("API_FAULT");
         const data = await res.json();
-        setState(data);
+        
+        // THE FIX: Safe Merge. Guarantee 'telemetry' exists
+        const safeData = {
+          ...INITIAL_STATE,
+          ...data,
+          telemetry: {
+            ...INITIAL_STATE.telemetry,
+            ...(data?.telemetry || {})
+          }
+        };
+
+        setState(safeData);
         setConnectionError(false);
       } catch (err) {
         setConnectionError(true);
@@ -39,13 +55,15 @@ export default function GroundControlPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Send propellant updates to the global API
   const updatePropellant = async (type: "lox" | "methane", value: number) => {
-    if (!state) return;
-    const currentTel = state.telemetry;
-    
-    // Ensure value stays between 0 and 100
+    const currentTel = state?.telemetry || INITIAL_STATE.telemetry;
     const safeValue = Math.max(0, Math.min(100, value));
+
+    // Optimistic UI Update
+    setState((prev: any) => ({
+      ...prev,
+      telemetry: { ...currentTel, [type]: safeValue }
+    }));
 
     try {
       await fetch("/api/mission", {
@@ -60,7 +78,7 @@ export default function GroundControlPage() {
         })
       });
     } catch (e) {
-      console.error("Failed to update propellant via uplink");
+      console.error("Failed to update propellant");
     }
   };
 
@@ -71,22 +89,14 @@ export default function GroundControlPage() {
     }));
   };
 
-  if (!state) return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-      <div className="text-cyan-500/50 text-xs font-mono tracking-widest uppercase animate-pulse">
-        {connectionError ? "Ground Link Failed..." : "Connecting to Launch Pad..."}
-      </div>
-    </div>
-  );
-
-  const tel = state.telemetry;
+  const tel = state?.telemetry || INITIAL_STATE.telemetry;
 
   return (
-    <div className="relative min-h-screen p-4 md:p-8 max-w-[1600px] mx-auto overflow-hidden">
+    <div className="relative min-h-screen p-4 md:p-8 max-w-[1600px] mx-auto overflow-hidden bg-[#030305]">
       
       {/* Background Atmosphere */}
       <div className="fixed inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
-      <div className="fixed bottom-0 left-0 w-[600px] h-[600px] bg-emerald-900/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="fixed bottom-0 left-0 w-[600px] h-[600px] bg-emerald-900/10 rounded-full blur-[150px] pointer-events-none z-0" />
 
       <div className="relative z-10 space-y-8">
 
@@ -114,7 +124,7 @@ export default function GroundControlPage() {
              <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono mb-1">Director Uplink</div>
              <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0f] border rounded-lg font-mono text-xs ${connectionError ? 'border-red-500/30 text-red-400' : 'border-emerald-500/30 text-emerald-400'}`}>
                 <Database size={14} />
-                {connectionError ? "OFFLINE" : state.status}
+                {connectionError ? "OFFLINE" : state.status || "STANDBY"}
              </div>
           </div>
         </motion.div>

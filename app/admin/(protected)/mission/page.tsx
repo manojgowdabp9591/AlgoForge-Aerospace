@@ -23,7 +23,6 @@ interface Telemetry {
   motor_temp: number; battery: number; signal: number;
 }
 
-// NEW: Pre-load the UI so it never crashes while waiting for the physical rocket
 const INITIAL_STATE = {
   status: "OFFLINE",
   armed: false,
@@ -37,13 +36,12 @@ const INITIAL_STATE = {
 };
 
 export default function MissionDirectorPage() {
-  // NEW: Inject INITIAL_STATE so it boots instantly without crashing
   const [state, setState] = useState<any>(INITIAL_STATE);
   const [history, setHistory] = useState<any[]>([]);
   const [cmdInput, setCmdInput] = useState("");
   const [activeTab, setActiveTab] = useState<"charts" | "map" | "events" | "phase">("charts");
   const [missionTime, setMissionTime] = useState(0);
-  const [connectionError, setConnectionError] = useState(true); // Assume offline until proven otherwise
+  const [connectionError, setConnectionError] = useState(false);
   const tRef = useRef(0);
 
   // Poll API every 500ms
@@ -54,20 +52,29 @@ export default function MissionDirectorPage() {
         if (!res.ok) throw new Error("API_FAULT");
         const data = await res.json();
         
-        setState(data);
-        setMissionTime(data.missionTime || 0);
+        // THE FIX: Safe Merge. Guarantee 'telemetry' exists even if DB is empty
+        const safeData = {
+          ...INITIAL_STATE,
+          ...data,
+          telemetry: {
+            ...INITIAL_STATE.telemetry,
+            ...(data?.telemetry || {})
+          }
+        };
+
+        setState(safeData);
+        setMissionTime(safeData.missionTime || 0);
         setConnectionError(false);
 
         tRef.current += 0.5;
         setHistory(prev => [...prev.slice(-100), {
           t: parseFloat(tRef.current.toFixed(1)),
-          altitude: data.telemetry.altitude,
-          velocity: data.telemetry.velocity,
-          thrust: data.telemetry.thrust,
-          accel: data.telemetry.accel,
+          altitude: safeData.telemetry.altitude,
+          velocity: safeData.telemetry.velocity,
+          thrust: safeData.telemetry.thrust,
+          accel: safeData.telemetry.accel,
         }]);
       } catch (err) {
-        // If it fails, keep the UI visible but flag the error
         setConnectionError(true);
       }
     };
@@ -80,7 +87,6 @@ export default function MissionDirectorPage() {
   const update = async (body: object) => {
     // Optimistic UI update
     setState((prev: any) => ({ ...prev, ...body }));
-    
     try {
       await fetch("/api/mission", {
         method: "POST",
@@ -93,7 +99,7 @@ export default function MissionDirectorPage() {
   };
 
   const pushEvent = (msg: string, type = "info") => update({ 
-    events: [...(state.events || []), { time: new Date().toISOString(), msg, type }].slice(-50)
+    events: [...(state.events || []), { time: new Date().toISOString(), msg, type }].slice(-50) 
   });
 
   const formatTime = (s: number) => {
@@ -105,7 +111,9 @@ export default function MissionDirectorPage() {
     return `T${isNeg ? "-" : "+"} ${h}:${m}:${sec}`;
   };
 
-  const tel: Telemetry = state.telemetry;
+  // Safe extraction (double-checking to prevent crashes)
+  const tel: Telemetry = state?.telemetry || INITIAL_STATE.telemetry;
+  const currentStage = tel.stage || 0;
 
   return (
     <div className="relative min-h-screen p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto overflow-hidden bg-[#030305]">
@@ -134,7 +142,7 @@ export default function MissionDirectorPage() {
             <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-cyan-500/60 uppercase">
               <span className="flex items-center gap-2">
                 <Radio size={10} className={connectionError ? "text-red-500" : "animate-pulse"} /> 
-                {connectionError ? "UPLINK DEGRADED - WAITING FOR GROUND STATION" : "BROADCASTING LIVE"}
+                {connectionError ? "UPLINK DEGRADED" : "BROADCASTING LIVE"}
               </span>
             </div>
           </div>
@@ -154,18 +162,18 @@ export default function MissionDirectorPage() {
             <div className="text-[10px] text-white/30 uppercase tracking-widest flex items-center gap-2">
                 <ShieldAlert size={14}/> Profile
             </div>
-            <select value={state.status}
+            <select value={state.status || "OFFLINE"}
               onChange={(e) => update({ status: e.target.value })}
               className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-cyan-500/50 transition-colors uppercase font-bold tracking-wider cursor-pointer">
               {STATUS_OPTIONS.map(s => <option key={s} value={s} className="bg-[#0a0a0f]">{s}</option>)}
             </select>
             <div className="px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest border"
               style={{
-                color: STAGE_COLORS[tel.stage] || "#fff",
-                borderColor: (STAGE_COLORS[tel.stage] || "#fff") + "44",
-                background: (STAGE_COLORS[tel.stage] || "#fff") + "11"
+                color: STAGE_COLORS[currentStage] || "#fff",
+                borderColor: (STAGE_COLORS[currentStage] || "#fff") + "44",
+                background: (STAGE_COLORS[currentStage] || "#fff") + "11"
               }}>
-              {STAGE_LABELS[tel.stage] || "OFFLINE"}
+              {STAGE_LABELS[currentStage] || "STANDBY"}
             </div>
           </div>
           <div className={`text-xl md:text-3xl font-mono font-black tracking-widest ${missionTime < 0 ? 'text-yellow-400' : 'text-cyan-400'} drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]`}>
@@ -292,7 +300,7 @@ export default function MissionDirectorPage() {
               </div>
               <div className="space-y-3">
                 {[
-                  ["GNC", connectionError ? "FAULT" : "NOMINAL"],
+                  ["GNC", "NOMINAL"],
                   ["VORTEX-1", state.armed ? "ARMED" : "STANDBY"],
                   ["RCS", "STANDBY"],
                   ["Thermal", "NOMINAL"],
@@ -305,8 +313,6 @@ export default function MissionDirectorPage() {
                         ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                         : s === "ARMED"
                         ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
-                        : s === "FAULT"
-                        ? "bg-red-500/10 text-red-400 border-red-500/20"
                         : "bg-[#050508] text-white/30 border-white/10"
                     }`}>{s}</span>
                   </div>
@@ -341,7 +347,7 @@ export default function MissionDirectorPage() {
                   {[
                     { label: "ALTITUDE PROFILE (m)", key: "altitude", color: "#22d3ee" },
                     { label: "VELOCITY VECTOR (m/s)", key: "velocity", color: "#3b82f6" },
-                    { label: "VERTICAL ACCELERATION (G)", key: "accel", color: "#8b5cf6" },
+                    { label: "ENGINE THRUST (N)", key: "thrust", color: "#f97316" },
                   ].map(c => (
                     <div key={c.key} className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-4">
                       <div className="text-[10px] uppercase tracking-widest mb-4 font-bold flex items-center gap-2" style={{ color: c.color }}>
@@ -413,7 +419,7 @@ export default function MissionDirectorPage() {
                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                      >
                        <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_12px_#22d3ee] animate-pulse" />
-                       <div className="mt-1 text-[9px] text-cyan-400 font-mono whitespace-nowrap">VORTEX-1</div>
+                       <div className="mt-1 text-[9px] text-cyan-400 font-mono whitespace-nowrap">ORBITON-2</div>
                      </motion.div>
                    </div>
                 </motion.div>
@@ -440,7 +446,7 @@ export default function MissionDirectorPage() {
                   </div>
                   
                   <div className="flex-1 p-5 overflow-y-auto space-y-3 font-mono">
-                    {(state.events ?? []).map((e: any, i: number) => (
+                    {(state?.events || []).map((e: any, i: number) => (
                       <div key={i} className={`flex gap-4 text-xs border-l-2 pl-4 py-1.5 bg-white/[0.02] rounded-r-lg ${
                         e.type === "critical" ? "border-red-500 text-red-400"
                         : e.type === "success" ? "border-emerald-500 text-emerald-400"
@@ -483,24 +489,24 @@ export default function MissionDirectorPage() {
                       {STAGE_LABELS.map((label, i) => (
                         <div key={i} className="flex items-center gap-4 group">
                           <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-all ${
-                            i < tel.stage ? "border-emerald-500 bg-emerald-500/20 text-emerald-400"
-                            : i === tel.stage ? "border-cyan-400 bg-cyan-500/20 text-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.3)]"
+                            i < currentStage ? "border-emerald-500 bg-emerald-500/20 text-emerald-400"
+                            : i === currentStage ? "border-cyan-400 bg-cyan-500/20 text-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.3)]"
                             : "border-white/10 text-white/20 group-hover:border-white/30"
                           }`}>
-                            {i < tel.stage ? "✓" : i + 1}
+                            {i < currentStage ? "✓" : i + 1}
                           </div>
                           
                           <div className="flex-1 h-[2px] bg-white/5 relative">
-                              {(i <= tel.stage) && (
+                              {(i <= currentStage) && (
                                   <motion.div 
                                     initial={{ width: 0 }} animate={{ width: "100%" }} 
-                                    className={`absolute inset-y-0 left-0 ${i < tel.stage ? 'bg-emerald-500/50' : 'bg-gradient-to-r from-emerald-500/50 to-cyan-400'}`} 
+                                    className={`absolute inset-y-0 left-0 ${i < currentStage ? 'bg-emerald-500/50' : 'bg-gradient-to-r from-emerald-500/50 to-cyan-400'}`} 
                                   />
                               )}
                           </div>
 
                           <span className={`text-sm font-black uppercase tracking-widest w-32 text-right ${
-                            i === tel.stage ? "text-cyan-400" : i < tel.stage ? "text-emerald-400/50" : "text-white/20"
+                            i === currentStage ? "text-cyan-400" : i < currentStage ? "text-emerald-400/50" : "text-white/20"
                           }`}>{label}</span>
                           
                           <button
