@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Target, Wind, Radio, Cpu, Rocket, Globe, Activity,
   AlertTriangle, ShieldAlert, Power, Thermometer,
-  Terminal
+  Terminal, WifiOff
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis,
@@ -29,6 +29,8 @@ const INITIAL_STATE = {
   maxAlt: 0,
   maxVel: 0,
   events: [],
+  serverAge: 9999,      // Added so the UI knows it starts offline
+  rx_status: "OFFLINE", 
   telemetry: {
     altitude: 0, velocity: 0, accel: 1.0, pitch: 0, roll: 0, stage: 0,
     lox: 100, methane: 100, thrust: 0, motor_temp: 22, battery: 100, signal: -120
@@ -52,7 +54,7 @@ export default function MissionDirectorPage() {
         if (!res.ok) throw new Error("API_FAULT");
         const data = await res.json();
         
-        // THE FIX: Safe Merge. Guarantee 'telemetry' exists even if DB is empty
+        // Safe Merge. Guarantee 'telemetry' exists even if DB is empty
         const safeData = {
           ...INITIAL_STATE,
           ...data,
@@ -69,7 +71,6 @@ export default function MissionDirectorPage() {
         tRef.current += 0.5;
         setHistory(prev => [...prev.slice(-100), {
           t: parseFloat(tRef.current.toFixed(1)),
-          // Added Number() fallbacks here to prevent chart crashes
           altitude: Number(safeData.telemetry.altitude) || 0,
           velocity: Number(safeData.telemetry.velocity) || 0,
           thrust: Number(safeData.telemetry.thrust) || 0,
@@ -77,6 +78,8 @@ export default function MissionDirectorPage() {
         }]);
       } catch (err) {
         setConnectionError(true);
+        // Force UI to show offline if API fails
+        setState((prev: any) => ({ ...prev, serverAge: 9999 }));
       }
     };
 
@@ -112,21 +115,22 @@ export default function MissionDirectorPage() {
     return `T${isNeg ? "-" : "+"} ${h}:${m}:${sec}`;
   };
 
-  // Safe extraction
   const tel: Telemetry = state?.telemetry || INITIAL_STATE.telemetry;
   const currentStage = Number(tel.stage) || 0;
+
+  // --- HARDWARE AWARENESS VARIABLES ---
+  const isGroundOffline = state?.serverAge > 4000;
+  const isVehicleOffline = state?.rx_status === "LOS";
 
   return (
     <div className="relative min-h-screen p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto overflow-hidden bg-[#030305]">
       
-      {/* --- BACKGROUND ATMOSPHERE & CRT SCANLINES --- */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyan-900/10 rounded-full blur-[150px] pointer-events-none z-0" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-[1] bg-[length:100%_2px,3px_100%] pointer-events-none" />
 
       <div className="relative z-10 space-y-4">
 
-        {/* --- HEADER --- */}
         <motion.div 
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -141,23 +145,30 @@ export default function MissionDirectorPage() {
               MISSION <span className="text-cyan-500">DIRECTOR</span>
             </h1>
             <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-cyan-500/60 uppercase">
+              
+              {/* FIXED: Mapped hardware states directly into your existing span */}
               <span className="flex items-center gap-2">
-                <Radio size={10} className={connectionError ? "text-red-500" : "animate-pulse"} /> 
-                {connectionError ? "UPLINK DEGRADED" : "BROADCASTING LIVE"}
+                {isGroundOffline ? <WifiOff size={10} className="text-red-500" /> : <Radio size={10} className={connectionError ? "text-red-500" : isVehicleOffline ? "text-yellow-500 animate-pulse" : "animate-pulse"} />} 
+                {connectionError || isGroundOffline ? "GROUND STATION OFFLINE" : isVehicleOffline ? "VEHICLE SIGNAL LOST" : "BROADCASTING LIVE"}
               </span>
+
             </div>
           </div>
           
           <div className="text-right flex flex-col items-end">
              <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono mb-1">Global Data Uplink</div>
-             <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0f] border rounded-lg font-mono text-xs ${connectionError ? 'border-red-500/30 text-red-400' : 'border-cyan-500/30 text-cyan-400'}`}>
+             
+             {/* FIXED: Uses suppressHydrationWarning so the time string never crashes your browser */}
+             <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0f] border rounded-lg font-mono text-xs ${connectionError || isGroundOffline ? 'border-red-500/30 text-red-400' : isVehicleOffline ? 'border-yellow-500/30 text-yellow-500' : 'border-cyan-500/30 text-cyan-400'}`}>
                 <Globe size={14} />
-                {connectionError ? "SYNC FAILED" : `SYNCED: ${new Date().toLocaleTimeString()}`}
+                <span suppressHydrationWarning>
+                  {connectionError || isGroundOffline ? "SYNC FAILED" : isVehicleOffline ? "RX_LOS" : `SYNCED: ${new Date().toLocaleTimeString()}`}
+                </span>
              </div>
+             
           </div>
         </motion.div>
 
-        {/* --- TOP: STATUS BAR --- */}
         <div className="flex flex-wrap items-center justify-between p-4 bg-[#0a0a0f]/80 backdrop-blur-md border border-white/10 rounded-2xl gap-4 shadow-[0_0_30px_rgba(6,182,212,0.05)]">
           <div className="flex items-center gap-4">
             <div className="text-[10px] text-white/30 uppercase tracking-widest flex items-center gap-2">
@@ -215,10 +226,7 @@ export default function MissionDirectorPage() {
 
         <div className="grid lg:grid-cols-12 gap-4 pb-10">
 
-          {/* --- LEFT COLUMN --- */}
           <div className="lg:col-span-3 space-y-4">
-
-            {/* ARM / FIRE / ABORT */}
             <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-cyan-500/20 rounded-2xl p-5 relative overflow-hidden shadow-lg">
               {state.armed && <div className="absolute inset-0 bg-yellow-500/5 animate-pulse pointer-events-none" />}
               <div className="text-[10px] text-white/30 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10">
@@ -235,7 +243,6 @@ export default function MissionDirectorPage() {
                   }`}>
                   {state.armed ? "⚠️ ORDNANCE ARMED" : "ARM IGNITER"}
                 </button>
-
                 <button
                   onClick={() => { update({ status: "LIVE" }); pushEvent("🔥 IGNITION COMMAND SENT", "critical"); }}
                   disabled={!state.armed}
@@ -246,7 +253,6 @@ export default function MissionDirectorPage() {
                   }`}>
                   <Power size={18} /> INITIATE LAUNCH
                 </button>
-
                 <button
                   onClick={() => { update({ armed: false, status: "ABORTED" }); pushEvent("🛑 ABORT — ALL SYSTEMS HALT", "critical"); }}
                   className="w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-transparent border border-red-900/50 text-red-500 hover:border-red-500 hover:bg-red-950/30 transition-all flex items-center justify-center gap-2">
@@ -255,7 +261,6 @@ export default function MissionDirectorPage() {
               </div>
             </div>
 
-            {/* Countdown setter */}
             <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-5">
               <div className="text-[10px] text-white/30 uppercase tracking-widest mb-3">
                 Countdown Config (s)
@@ -266,7 +271,6 @@ export default function MissionDirectorPage() {
               />
             </div>
 
-            {/* Propellants */}
             <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-5">
               <div className="text-[10px] text-white/30 uppercase tracking-widest mb-4 flex items-center gap-2">
                 <Wind size={12} className="text-cyan-500" /> Tank Pressures
@@ -294,7 +298,6 @@ export default function MissionDirectorPage() {
               </div>
             </div>
 
-            {/* Systems */}
             <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-5">
               <div className="text-[10px] text-white/30 uppercase tracking-widest mb-4 flex items-center gap-2">
                 <Cpu size={12} className="text-cyan-500" /> Core Avionics
@@ -322,10 +325,7 @@ export default function MissionDirectorPage() {
             </div>
           </div>
 
-          {/* --- CENTER COLUMN: CHARTS / MAP / EVENTS / PHASE --- */}
           <div className="lg:col-span-6 space-y-4">
-
-            {/* Tabs */}
             <div className="flex gap-2 bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-xl p-1.5">
               {(["charts","map","events","phase"] as const).map(tab => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
@@ -338,13 +338,8 @@ export default function MissionDirectorPage() {
             </div>
 
             <AnimatePresence mode="wait">
-              
-              {/* CHARTS */}
               {activeTab === "charts" && (
-                <motion.div key="charts"
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
-                  className="space-y-4">
+                <motion.div key="charts" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
                   {[
                     { label: "ALTITUDE PROFILE (m)", key: "altitude", color: "#22d3ee" },
                     { label: "VELOCITY VECTOR (m/s)", key: "velocity", color: "#3b82f6" },
@@ -365,12 +360,8 @@ export default function MissionDirectorPage() {
                           <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
                           <XAxis dataKey="t" stroke="#ffffff20" tick={{ fontSize: 9, fill: '#ffffff40' }} tickLine={false} axisLine={false} />
                           <YAxis stroke="#ffffff20" tick={{ fontSize: 9, fill: '#ffffff40' }} tickLine={false} axisLine={false} width={40} />
-                          <Tooltip 
-                            contentStyle={{ background: "#050508", border: "1px solid rgba(6,182,212,0.2)", borderRadius: 8, fontSize: 11, fontWeight: 'bold' }} 
-                            itemStyle={{ color: c.color }}
-                          />
-                          <Area type="monotone" dataKey={c.key} stroke={c.color} strokeWidth={2}
-                            fill={`url(#g-${c.key})`} dot={false} isAnimationActive={false} />
+                          <Tooltip contentStyle={{ background: "#050508", border: "1px solid rgba(6,182,212,0.2)", borderRadius: 8, fontSize: 11, fontWeight: 'bold' }} itemStyle={{ color: c.color }} />
+                          <Area type="monotone" dataKey={c.key} stroke={c.color} strokeWidth={2} fill={`url(#g-${c.key})`} dot={false} isAnimationActive={false} />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
@@ -378,15 +369,10 @@ export default function MissionDirectorPage() {
                 </motion.div>
               )}
 
-              {/* MAP */}
               {activeTab === "map" && (
-                <motion.div key="map"
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
-                  className="bg-[#0a0a0f]/90 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative">
+                <motion.div key="map" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-[#0a0a0f]/90 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative">
                    <div className="relative h-[480px] bg-[#050508] flex items-center justify-center">
                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#0a0a1a_0%,#050508_70%)]" />
-                     
                      <svg className="absolute inset-0 w-full h-full opacity-20">
                        {[...Array(10)].map((_, i) => (
                          <g key={i}>
@@ -395,30 +381,16 @@ export default function MissionDirectorPage() {
                          </g>
                        ))}
                      </svg>
-
                      <svg className="absolute inset-0 w-full h-full">
-                        <ellipse cx="50%" cy="50%" rx="38%" ry="22%"
-                          fill="none" stroke="#22d3ee" strokeWidth="1"
-                          strokeDasharray="4 4" opacity="0.3" />
+                        <ellipse cx="50%" cy="50%" rx="38%" ry="22%" fill="none" stroke="#22d3ee" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
                      </svg>
-
                      <div className="relative z-10 flex flex-col items-center gap-4">
                        <div className="w-24 h-24 rounded-full bg-blue-900/60 border-2 border-blue-500/40 shadow-[0_0_40px_rgba(59,130,246,0.3)] flex items-center justify-center">
                          <span className="text-3xl">🌍</span>
                        </div>
-                       <div className="text-[10px] text-cyan-400 font-mono uppercase tracking-widest bg-black/50 px-3 py-1 rounded-full border border-cyan-500/30">
-                         ORBITAL PLANE
-                       </div>
+                       <div className="text-[10px] text-cyan-400 font-mono uppercase tracking-widest bg-black/50 px-3 py-1 rounded-full border border-cyan-500/30">ORBITAL PLANE</div>
                      </div>
-
-                     <motion.div
-                       className="absolute"
-                       animate={{
-                         left: ["30%", "50%", "70%", "50%", "30%"],
-                         top: ["30%", "20%", "30%", "45%", "30%"],
-                       }}
-                       transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                     >
+                     <motion.div className="absolute" animate={{ left: ["30%", "50%", "70%", "50%", "30%"], top: ["30%", "20%", "30%", "45%", "30%"] }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }}>
                        <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_12px_#22d3ee] animate-pulse" />
                        <div className="mt-1 text-[9px] text-cyan-400 font-mono whitespace-nowrap">ORBITON-2</div>
                      </motion.div>
@@ -426,107 +398,52 @@ export default function MissionDirectorPage() {
                 </motion.div>
               )}
 
-              {/* EVENTS TERMINAL */}
               {activeTab === "events" && (
-                <motion.div key="events"
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
-                  className="bg-[#050508] border border-cyan-500/30 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(6,182,212,0.1)] flex flex-col h-[560px] font-mono text-xs relative">
-                  
+                <motion.div key="events" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-[#050508] border border-cyan-500/30 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(6,182,212,0.1)] flex flex-col h-[560px] font-mono text-xs relative">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-500" />
-                  
                   <div className="bg-white/5 px-5 py-3 flex justify-between items-center border-b border-white/10 shrink-0 mt-1">
-                    <span className="text-cyan-400 font-bold tracking-widest flex items-center gap-2">
-                        <Terminal size={14} /> GLOBAL_COMMS_LINK
-                    </span>
+                    <span className="text-cyan-400 font-bold tracking-widest flex items-center gap-2"><Terminal size={14} /> GLOBAL_COMMS_LINK</span>
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
                       <div className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
                     </div>
                   </div>
-                  
                   <div className="flex-1 p-5 overflow-y-auto space-y-3 font-mono">
-                    {(state?.events || []).map((e: any, i: number) => (
-                      <div key={i} className={`flex gap-4 text-xs border-l-2 pl-4 py-1.5 bg-white/[0.02] rounded-r-lg ${
-                        e.type === "critical" ? "border-red-500 text-red-400"
-                        : e.type === "success" ? "border-emerald-500 text-emerald-400"
-                        : e.type === "warning" ? "border-yellow-500 text-yellow-400"
-                        : "border-cyan-500/50 text-white/70"
-                      }`}>
-                        <span className="text-white/30 shrink-0">[{new Date(e.time || Date.now()).toLocaleTimeString("en-GB")}]</span>
+                    {(state.events || []).map((e: any, i: number) => (
+                      <div key={i} className={`flex gap-4 text-xs border-l-2 pl-4 py-1.5 bg-white/[0.02] rounded-r-lg ${e.type === "critical" ? "border-red-500 text-red-400" : e.type === "success" ? "border-emerald-500 text-emerald-400" : e.type === "warning" ? "border-yellow-500 text-yellow-400" : "border-cyan-500/50 text-white/70"}`}>
+                        <span className="text-white/30 shrink-0" suppressHydrationWarning>[{new Date(e.time || Date.now()).toLocaleTimeString("en-GB")}]</span>
                         <span>{e.msg}</span>
                       </div>
                     ))}
                   </div>
-                  
                   <div className="border-t border-cyan-500/30 bg-[#020203] px-5 py-4 flex items-center gap-3">
                     <span className="text-cyan-500 font-bold">&gt;</span>
-                    <input value={cmdInput} onChange={(e) => setCmdInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && cmdInput.trim()) {
-                          pushEvent(`DIRECTOR: ${cmdInput.trim()}`, "info");
-                          setCmdInput("");
-                        }
-                      }}
-                      placeholder="Type command to broadcast to global public feed..."
-                      className="flex-1 bg-transparent text-white outline-none text-xs font-mono placeholder-white/20"
-                    />
+                    <input value={cmdInput} onChange={(e) => setCmdInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && cmdInput.trim()) { pushEvent(`DIRECTOR: ${cmdInput.trim()}`, "info"); setCmdInput(""); } }} placeholder="Type command to broadcast to global public feed..." className="flex-1 bg-transparent text-white outline-none text-xs font-mono placeholder-white/20" />
                     <button onClick={() => { if(cmdInput) { pushEvent(`DIRECTOR: ${cmdInput.trim()}`); setCmdInput(""); } }} className="text-[10px] bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-3 py-1.5 rounded hover:bg-cyan-500 hover:text-black transition-colors uppercase font-bold tracking-widest">Transmit</button>
                   </div>
                 </motion.div>
               )}
 
-              {/* PHASE OVERRIDE */}
               {activeTab === "phase" && (
-                <motion.div key="phase"
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
-                  className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-6 space-y-6">
-                  
+                <motion.div key="phase" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-6 space-y-6">
                   <div className="text-[10px] text-white/30 uppercase tracking-widest border-b border-white/5 pb-4">Manual Phase Override</div>
-                  
                   <div className="space-y-4">
                       {STAGE_LABELS.map((label, i) => (
                         <div key={i} className="flex items-center gap-4 group">
-                          <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-all ${
-                            i < currentStage ? "border-emerald-500 bg-emerald-500/20 text-emerald-400"
-                            : i === currentStage ? "border-cyan-400 bg-cyan-500/20 text-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.3)]"
-                            : "border-white/10 text-white/20 group-hover:border-white/30"
-                          }`}>
+                          <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-all ${i < currentStage ? "border-emerald-500 bg-emerald-500/20 text-emerald-400" : i === currentStage ? "border-cyan-400 bg-cyan-500/20 text-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.3)]" : "border-white/10 text-white/20 group-hover:border-white/30"}`}>
                             {i < currentStage ? "✓" : i + 1}
                           </div>
-                          
                           <div className="flex-1 h-[2px] bg-white/5 relative">
-                              {(i <= currentStage) && (
-                                  <motion.div 
-                                    initial={{ width: 0 }} animate={{ width: "100%" }} 
-                                    className={`absolute inset-y-0 left-0 ${i < currentStage ? 'bg-emerald-500/50' : 'bg-gradient-to-r from-emerald-500/50 to-cyan-400'}`} 
-                                  />
-                              )}
+                              {(i <= currentStage) && (<motion.div initial={{ width: 0 }} animate={{ width: "100%" }} className={`absolute inset-y-0 left-0 ${i < currentStage ? 'bg-emerald-500/50' : 'bg-gradient-to-r from-emerald-500/50 to-cyan-400'}`} />)}
                           </div>
-
-                          <span className={`text-sm font-black uppercase tracking-widest w-32 text-right ${
-                            i === currentStage ? "text-cyan-400" : i < currentStage ? "text-emerald-400/50" : "text-white/20"
-                          }`}>{label}</span>
-                          
-                          <button
-                            onClick={() => {
-                              update({ telemetry: { ...tel, stage: i } });
-                              pushEvent(`Phase Overridden → ${label}`, "warning");
-                            }}
-                            className="text-[10px] px-3 py-1.5 font-bold rounded-lg border border-white/10 text-white/30 hover:border-cyan-500 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all">
-                            FORCE SET
-                          </button>
+                          <span className={`text-sm font-black uppercase tracking-widest w-32 text-right ${i === currentStage ? "text-cyan-400" : i < currentStage ? "text-emerald-400/50" : "text-white/20"}`}>{label}</span>
+                          <button onClick={() => { update({ telemetry: { ...tel, stage: i } }); pushEvent(`Phase Overridden → ${label}`, "warning"); }} className="text-[10px] px-3 py-1.5 font-bold rounded-lg border border-white/10 text-white/30 hover:border-cyan-500 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all">FORCE SET</button>
                         </div>
                       ))}
                   </div>
-
                   <div className="pt-6 border-t border-white/5 mt-6">
-                    <button onClick={() => update({ reset: true })}
-                      className="w-full py-3 text-xs font-bold uppercase tracking-widest rounded-xl bg-transparent border border-red-900/40 text-red-500/70 hover:border-red-500 hover:text-red-400 hover:bg-red-500/10 transition-all">
-                      RESET MISSION PARAMETERS
-                    </button>
+                    <button onClick={() => update({ reset: true })} className="w-full py-3 text-xs font-bold uppercase tracking-widest rounded-xl bg-transparent border border-red-900/40 text-red-500/70 hover:border-red-500 hover:text-red-400 hover:bg-red-500/10 transition-all">RESET MISSION PARAMETERS</button>
                   </div>
                 </motion.div>
               )}
@@ -535,90 +452,49 @@ export default function MissionDirectorPage() {
 
           {/* --- RIGHT COLUMN: ATTITUDE + SIGNAL --- */}
           <div className="lg:col-span-3 space-y-4">
-
-            {/* Attitude Indicator */}
             <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-lg">
-              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-6 flex items-center justify-between">
-                  <span>Flight Attitude</span>
-                  <Activity size={12} className="text-cyan-500" />
-              </div>
-              
+              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-6 flex items-center justify-between"><span>Flight Attitude</span><Activity size={12} className="text-cyan-500" /></div>
               <div className="flex justify-center mb-8 relative">
-                {/* Glow behind the horizon */}
                 <div className="absolute inset-0 bg-cyan-500/20 blur-2xl rounded-full scale-75" />
-                
-                <div className="relative w-36 h-36 rounded-full border-4 border-[#050508] shadow-[0_0_0_2px_rgba(255,255,255,0.1)] overflow-hidden"
-                  style={{ transform: `rotate(${Number(tel.roll) || 0}deg)` }}>
-                  {/* Sky */}
+                <div className="relative w-36 h-36 rounded-full border-4 border-[#050508] shadow-[0_0_0_2px_rgba(255,255,255,0.1)] overflow-hidden" style={{ transform: `rotate(${Number(tel.roll) || 0}deg)` }}>
                   <div className="absolute inset-0 bg-gradient-to-b from-blue-600 to-blue-400" />
-                  {/* Ground */}
-                  <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-b from-amber-700 to-amber-900 border-t-2 border-white transition-transform duration-300"
-                       style={{ transform: `translateY(${50 + (Number(tel.pitch) || 0) * 2}%)` }} />
-                  {/* Crosshair */}
+                  <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-b from-amber-700 to-amber-900 border-t-2 border-white transition-transform duration-300" style={{ transform: `translateY(${50 + (Number(tel.pitch) || 0) * 2}%)` }} />
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-16 h-[2px] bg-yellow-400 shadow-[0_0_8px_#fbbf24] rounded-full relative">
-                        <div className="absolute left-1/2 -top-1 w-[2px] h-3 bg-yellow-400 -translate-x-1/2" />
-                    </div>
+                    <div className="w-16 h-[2px] bg-yellow-400 shadow-[0_0_8px_#fbbf24] rounded-full relative"><div className="absolute left-1/2 -top-1 w-[2px] h-3 bg-yellow-400 -translate-x-1/2" /></div>
                   </div>
                 </div>
               </div>
-              
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[#050508] border border-white/5 rounded-xl p-3 text-center">
-                  <div className="text-[9px] text-white/40 tracking-widest mb-1">PITCH</div>
-                  <div className="text-lg font-mono font-black text-cyan-400">{(Number(tel.pitch) || 0).toFixed(1)}°</div>
-                </div>
-                <div className="bg-[#050508] border border-white/5 rounded-xl p-3 text-center">
-                  <div className="text-[9px] text-white/40 tracking-widest mb-1">ROLL</div>
-                  <div className="text-lg font-mono font-black text-cyan-400">{(Number(tel.roll) || 0).toFixed(1)}°</div>
-                </div>
+                <div className="bg-[#050508] border border-white/5 rounded-xl p-3 text-center"><div className="text-[9px] text-white/40 tracking-widest mb-1">PITCH</div><div className="text-lg font-mono font-black text-cyan-400">{(Number(tel.pitch) || 0).toFixed(1)}°</div></div>
+                <div className="bg-[#050508] border border-white/5 rounded-xl p-3 text-center"><div className="text-[9px] text-white/40 tracking-widest mb-1">ROLL</div><div className="text-lg font-mono font-black text-cyan-400">{(Number(tel.roll) || 0).toFixed(1)}°</div></div>
               </div>
             </div>
 
-            {/* Signal Strength */}
             <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-5">
               <div className="flex justify-between items-center mb-4">
-                <span className="text-[10px] text-white/30 uppercase tracking-widest flex items-center gap-2">
-                  <Radio size={12} className="text-cyan-500" /> Telemetry Link
-                </span>
-                <span className="text-xs text-cyan-400 font-mono font-bold bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">
-                    {(Number(tel.signal) || -120).toFixed(1)} dBm
-                </span>
+                <span className="text-[10px] text-white/30 uppercase tracking-widest flex items-center gap-2"><Radio size={12} className="text-cyan-500" /> Telemetry Link</span>
+                <span className="text-xs text-cyan-400 font-mono font-bold bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">{(Number(tel.signal) || 0).toFixed(1)} dBm</span>
               </div>
-              
               <div className="flex items-end gap-1.5 h-12 bg-[#050508] p-3 rounded-xl border border-white/5">
                 {[...Array(16)].map((_, i) => {
                   const active = i < Math.floor(((Number(tel.signal) || -120) + 120) / 4);
                   return (
-                    <div key={i} className="flex-1 rounded-sm transition-all duration-500"
-                      style={{
-                        height: `${20 + i * 5}%`,
-                        background: active
-                          ? i < 4 ? "#ef4444" : i < 10 ? "#f59e0b" : "#22d3ee"
-                          : "#ffffff08",
-                        boxShadow: active && i >= 10 ? "0 0 10px rgba(34,211,238,0.4)" : "none"
-                      }} />
+                    <div key={i} className="flex-1 rounded-sm transition-all duration-500" style={{ height: `${20 + i * 5}%`, background: active ? i < 4 ? "#ef4444" : i < 10 ? "#f59e0b" : "#22d3ee" : "#ffffff08", boxShadow: active && i >= 10 ? "0 0 10px rgba(34,211,238,0.4)" : "none" }} />
                   );
                 })}
               </div>
             </div>
 
-            {/* Quick Simulation Panel */}
             <div className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-5">
-              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-4 flex items-center gap-2">
-                 <Cpu size={12} /> Inject Test Telemetry
-              </div>
+              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-4 flex items-center gap-2"><Cpu size={12} /> Inject Test Telemetry</div>
               <div className="space-y-2.5">
                 {[
                   { label: "Simulate Boost Phase", data: { altitude: 50, velocity: 35, thrust: 36000, stage: 1, pitch: 80 } },
                   { label: "Simulate Apogee", data: { altitude: 103, velocity: 0, thrust: 0, stage: 3, pitch: 0 } },
                   { label: "Simulate Descent", data: { altitude: 60, velocity: -20, thrust: 0, stage: 4, pitch: -80 } },
                 ].map(sim => (
-                  <button key={sim.label}
-                    onClick={() => update({ telemetry: { ...tel, ...sim.data } })}
-                    className="w-full py-2.5 text-[9px] font-bold uppercase tracking-widest rounded-lg bg-[#050508] border border-white/10 hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all text-white/50 hover:text-cyan-400 flex justify-between px-4">
-                    <span>{sim.label}</span>
-                    <span>&gt;&gt;</span>
+                  <button key={sim.label} onClick={() => update({ telemetry: { ...tel, ...sim.data } })} className="w-full py-2.5 text-[9px] font-bold uppercase tracking-widest rounded-lg bg-[#050508] border border-white/10 hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all text-white/50 hover:text-cyan-400 flex justify-between px-4">
+                    <span>{sim.label}</span><span>&gt;&gt;</span>
                   </button>
                 ))}
               </div>
