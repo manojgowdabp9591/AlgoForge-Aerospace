@@ -23,13 +23,27 @@ interface Telemetry {
   motor_temp: number; battery: number; signal: number;
 }
 
+// NEW: Pre-load the UI so it never crashes while waiting for the physical rocket
+const INITIAL_STATE = {
+  status: "OFFLINE",
+  armed: false,
+  maxAlt: 0,
+  maxVel: 0,
+  events: [],
+  telemetry: {
+    altitude: 0, velocity: 0, accel: 1.0, pitch: 0, roll: 0, stage: 0,
+    lox: 100, methane: 100, thrust: 0, motor_temp: 22, battery: 100, signal: -120
+  }
+};
+
 export default function MissionDirectorPage() {
-  const [state, setState] = useState<any>(null);
+  // NEW: Inject INITIAL_STATE so it boots instantly without crashing
+  const [state, setState] = useState<any>(INITIAL_STATE);
   const [history, setHistory] = useState<any[]>([]);
   const [cmdInput, setCmdInput] = useState("");
   const [activeTab, setActiveTab] = useState<"charts" | "map" | "events" | "phase">("charts");
   const [missionTime, setMissionTime] = useState(0);
-  const [connectionError, setConnectionError] = useState(false);
+  const [connectionError, setConnectionError] = useState(true); // Assume offline until proven otherwise
   const tRef = useRef(0);
 
   // Poll API every 500ms
@@ -41,7 +55,7 @@ export default function MissionDirectorPage() {
         const data = await res.json();
         
         setState(data);
-        setMissionTime(data.missionTime);
+        setMissionTime(data.missionTime || 0);
         setConnectionError(false);
 
         tRef.current += 0.5;
@@ -50,8 +64,10 @@ export default function MissionDirectorPage() {
           altitude: data.telemetry.altitude,
           velocity: data.telemetry.velocity,
           thrust: data.telemetry.thrust,
+          accel: data.telemetry.accel,
         }]);
       } catch (err) {
+        // If it fails, keep the UI visible but flag the error
         setConnectionError(true);
       }
     };
@@ -62,6 +78,9 @@ export default function MissionDirectorPage() {
   }, []);
 
   const update = async (body: object) => {
+    // Optimistic UI update
+    setState((prev: any) => ({ ...prev, ...body }));
+    
     try {
       await fetch("/api/mission", {
         method: "POST",
@@ -73,7 +92,9 @@ export default function MissionDirectorPage() {
     }
   };
 
-  const pushEvent = (msg: string, type = "info") => update({ event: { msg, type } });
+  const pushEvent = (msg: string, type = "info") => update({ 
+    events: [...(state.events || []), { time: new Date().toISOString(), msg, type }].slice(-50)
+  });
 
   const formatTime = (s: number) => {
     const isNeg = s < 0;
@@ -83,19 +104,6 @@ export default function MissionDirectorPage() {
     const sec = (abs % 60).toString().padStart(2, "0");
     return `T${isNeg ? "-" : "+"} ${h}:${m}:${sec}`;
   };
-
-  if (!state) return (
-    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center space-y-4">
-      <div className="relative w-16 h-16">
-        <div className="absolute inset-0 rounded-full border-t-2 border-cyan-500 animate-spin" />
-        <div className="absolute inset-2 rounded-full border-b-2 border-blue-500 animate-spin-reverse" />
-        <Rocket className="absolute inset-0 m-auto text-cyan-500 animate-pulse" size={24} />
-      </div>
-      <div className="text-cyan-500/50 text-xs font-mono tracking-widest uppercase animate-pulse">
-        {connectionError ? "Establishing Secure Uplink..." : "Initializing Flight Dynamics..."}
-      </div>
-    </div>
-  );
 
   const tel: Telemetry = state.telemetry;
 
@@ -126,7 +134,7 @@ export default function MissionDirectorPage() {
             <div className="flex items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-cyan-500/60 uppercase">
               <span className="flex items-center gap-2">
                 <Radio size={10} className={connectionError ? "text-red-500" : "animate-pulse"} /> 
-                {connectionError ? "UPLINK DEGRADED" : "BROADCASTING LIVE"}
+                {connectionError ? "UPLINK DEGRADED - WAITING FOR GROUND STATION" : "BROADCASTING LIVE"}
               </span>
             </div>
           </div>
@@ -153,11 +161,11 @@ export default function MissionDirectorPage() {
             </select>
             <div className="px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest border"
               style={{
-                color: STAGE_COLORS[tel.stage],
-                borderColor: STAGE_COLORS[tel.stage] + "44",
-                background: STAGE_COLORS[tel.stage] + "11"
+                color: STAGE_COLORS[tel.stage] || "#fff",
+                borderColor: (STAGE_COLORS[tel.stage] || "#fff") + "44",
+                background: (STAGE_COLORS[tel.stage] || "#fff") + "11"
               }}>
-              {STAGE_LABELS[tel.stage]}
+              {STAGE_LABELS[tel.stage] || "OFFLINE"}
             </div>
           </div>
           <div className={`text-xl md:text-3xl font-mono font-black tracking-widest ${missionTime < 0 ? 'text-yellow-400' : 'text-cyan-400'} drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]`}>
@@ -284,7 +292,7 @@ export default function MissionDirectorPage() {
               </div>
               <div className="space-y-3">
                 {[
-                  ["GNC", "NOMINAL"],
+                  ["GNC", connectionError ? "FAULT" : "NOMINAL"],
                   ["VORTEX-1", state.armed ? "ARMED" : "STANDBY"],
                   ["RCS", "STANDBY"],
                   ["Thermal", "NOMINAL"],
@@ -297,6 +305,8 @@ export default function MissionDirectorPage() {
                         ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                         : s === "ARMED"
                         ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                        : s === "FAULT"
+                        ? "bg-red-500/10 text-red-400 border-red-500/20"
                         : "bg-[#050508] text-white/30 border-white/10"
                     }`}>{s}</span>
                   </div>
@@ -331,7 +341,7 @@ export default function MissionDirectorPage() {
                   {[
                     { label: "ALTITUDE PROFILE (m)", key: "altitude", color: "#22d3ee" },
                     { label: "VELOCITY VECTOR (m/s)", key: "velocity", color: "#3b82f6" },
-                    { label: "ENGINE THRUST (N)", key: "thrust", color: "#f97316" },
+                    { label: "VERTICAL ACCELERATION (G)", key: "accel", color: "#8b5cf6" },
                   ].map(c => (
                     <div key={c.key} className="bg-[#0a0a0f]/80 backdrop-blur-md border border-white/5 rounded-2xl p-4">
                       <div className="text-[10px] uppercase tracking-widest mb-4 font-bold flex items-center gap-2" style={{ color: c.color }}>
@@ -403,7 +413,7 @@ export default function MissionDirectorPage() {
                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                      >
                        <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_12px_#22d3ee] animate-pulse" />
-                       <div className="mt-1 text-[9px] text-cyan-400 font-mono whitespace-nowrap">ORBITON-2</div>
+                       <div className="mt-1 text-[9px] text-cyan-400 font-mono whitespace-nowrap">VORTEX-1</div>
                      </motion.div>
                    </div>
                 </motion.div>
@@ -571,7 +581,7 @@ export default function MissionDirectorPage() {
               
               <div className="flex items-end gap-1.5 h-12 bg-[#050508] p-3 rounded-xl border border-white/5">
                 {[...Array(16)].map((_, i) => {
-                  const active = i < Math.floor((tel.signal + 100) / 4);
+                  const active = i < Math.floor((tel.signal + 120) / 4);
                   return (
                     <div key={i} className="flex-1 rounded-sm transition-all duration-500"
                       style={{
@@ -593,9 +603,9 @@ export default function MissionDirectorPage() {
               </div>
               <div className="space-y-2.5">
                 {[
-                  { label: "Simulate Boost Phase", data: { altitude: 50, velocity: 35, thrust: 36000, stage: 1, pitch: 80 } },
-                  { label: "Simulate Apogee", data: { altitude: 103, velocity: 0, thrust: 0, stage: 3, pitch: 0 } },
-                  { label: "Simulate Descent", data: { altitude: 60, velocity: -20, thrust: 0, stage: 4, pitch: -80 } },
+                  { label: "Simulate Boost Phase", data: { altitude: 50, velocity: 35, thrust: 36000, stage: 1, pitch: 80, signal: -45 } },
+                  { label: "Simulate Apogee", data: { altitude: 103, velocity: 0, thrust: 0, stage: 3, pitch: 0, signal: -55 } },
+                  { label: "Simulate Descent", data: { altitude: 60, velocity: -20, thrust: 0, stage: 4, pitch: -80, signal: -65 } },
                 ].map(sim => (
                   <button key={sim.label}
                     onClick={() => update({ telemetry: { ...tel, ...sim.data } })}
