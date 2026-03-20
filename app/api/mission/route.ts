@@ -15,7 +15,7 @@ const DEFAULT_MISSION_STATE = {
   events: [{ time: new Date().toISOString(), msg: "SYSTEM: Awaiting Ground Station Uplink...", type: "warning" }]
 };
 
-const MONGODB_URI = process.env.MONGODB_URI || "";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://Admin:AlgoAero2026@algoforgeaerospace.ohycryh.mongodb.net/?appName=AlgoForgeAerospace";
 
 // Define the Mission Schema
 const MissionSchema = new mongoose.Schema({
